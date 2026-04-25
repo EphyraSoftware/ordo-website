@@ -1,0 +1,170 @@
+---
+const docsUrl = 'https://docs.ordo.ephyrasoftware.com';
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Ordo</title>
+		<meta
+			name="description"
+			content="Self-hosted, declarative infrastructure management for stateful machines."
+		/>
+	</head>
+	<body>
+		<header>
+			<a href="/" class="brand">Ordo</a>
+			<nav>
+				<a href={docsUrl}>Docs</a>
+			</nav>
+		</header>
+
+		<main>
+			<section class="hero">
+				<h1>Ordo</h1>
+				<p class="tagline">
+					Intentional infrastructure — define state, detect drift, act
+					deliberately.
+				</p>
+				<p>
+					<a class="cta" href={docsUrl}>Read the docs</a>
+				</p>
+			</section>
+
+			<section>
+				<h2>The problem</h2>
+				<p>
+					Existing tools for managing stateful machines are either too
+					big to operate or too small to trust.
+				</p>
+			</section>
+
+			<section>
+				<h2>What Ordo does</h2>
+				<p>
+					Declarative state management, drift detection, progressive
+					deployment, and an audit trail — all self-hosted by default.
+				</p>
+			</section>
+
+			<section>
+				<h2>Who it is for</h2>
+				<p>
+					Teams running real workloads on machines they own.
+				</p>
+			</section>
+
+			<section>
+				<h2>Architecture at a glance</h2>
+				<p>
+					An orchestrator on one machine; agents on the rest.
+				</p>
+			</section>
+
+			<section>
+				<h2>Install</h2>
+				<p>Install instructions will live here.</p>
+			</section>
+		</main>
+
+		<footer>
+			<p>Ephyra Software</p>
+		</footer>
+
+		<style is:global>
+			:root {
+				color-scheme: light;
+				--text: #1a1a1a;
+				--muted: #5a5a5a;
+				--accent: #1a1a1a;
+				--rule: #e5e5e5;
+			}
+			html {
+				font-family:
+					ui-serif, Georgia, 'Times New Roman', serif;
+				color: var(--text);
+				background: #fafaf7;
+			}
+			body {
+				margin: 0;
+				line-height: 1.6;
+			}
+			header,
+			main,
+			footer {
+				max-width: 42rem;
+				margin: 0 auto;
+				padding: 0 1.5rem;
+			}
+			header {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				padding-top: 1.5rem;
+				padding-bottom: 1.5rem;
+				border-bottom: 1px solid var(--rule);
+			}
+			.brand {
+				font-size: 1.25rem;
+				font-weight: 600;
+				color: var(--text);
+				text-decoration: none;
+				letter-spacing: 0.02em;
+			}
+			nav a {
+				color: var(--muted);
+				text-decoration: none;
+			}
+			nav a:hover {
+				color: var(--text);
+			}
+			main {
+				padding-top: 3rem;
+				padding-bottom: 3rem;
+			}
+			section {
+				margin-bottom: 3rem;
+			}
+			.hero {
+				margin-bottom: 4rem;
+			}
+			.hero h1 {
+				font-size: 2.5rem;
+				margin: 0 0 0.5rem;
+			}
+			.tagline {
+				color: var(--muted);
+				font-size: 1.15rem;
+				margin: 0 0 1.5rem;
+			}
+			h2 {
+				font-size: 1.15rem;
+				margin: 0 0 0.5rem;
+			}
+			p {
+				margin: 0 0 1rem;
+			}
+			.cta {
+				display: inline-block;
+				color: #fafaf7;
+				background: var(--accent);
+				padding: 0.5rem 1rem;
+				text-decoration: none;
+				border-radius: 2px;
+			}
+			.cta:hover {
+				background: #333;
+			}
+			footer {
+				border-top: 1px solid var(--rule);
+				padding-top: 1.5rem;
+				padding-bottom: 1.5rem;
+				color: var(--muted);
+				font-size: 0.9rem;
+			}
+		</style>
+	</body>
+</html>
