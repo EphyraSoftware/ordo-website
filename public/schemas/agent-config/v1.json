@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentConfig",
+  "description": "Top-level agent configuration, loadable from a YAML file.",
+  "type": "object",
+  "properties": {
+    "metrics": {
+      "description": "Metrics collection configuration section.",
+      "default": {
+        "collection_interval": 30,
+        "enabled": true
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/MetricsConfig"
+        }
+      ]
+    },
+    "remote_terminal": {
+      "description": "Remote terminal configuration section.",
+      "default": {
+        "allow_operator_shell_override": false,
+        "enabled": false,
+        "max_sessions": 100,
+        "shell": ""
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/RemoteTerminalConfig"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "MetricsConfig": {
+      "description": "Configuration for the metrics collection feature.\n\nThe agent runs a background sampling task so that responses to `MetricsRequest` are served from a cached snapshot — keeping responses fast and decoupled from the cost of reading sysinfo. See `docs/design/0009-basic-system-metrics.md`.",
+      "type": "object",
+      "properties": {
+        "collection_interval": {
+          "description": "How often the agent samples system metrics, in seconds.\n\nDefaults to 30 seconds so that with the default orchestrator poll interval of 60 seconds the served snapshot is at most 30 seconds old.",
+          "default": 30,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "enabled": {
+          "description": "Whether system metrics collection is enabled on this agent.",
+          "default": true,
+          "type": "boolean"
+        }
+      }
+    },
+    "RemoteTerminalConfig": {
+      "description": "Configuration for the remote terminal feature (ADR 004).",
+      "type": "object",
+      "properties": {
+        "allow_operator_shell_override": {
+          "description": "Whether the operator may override the shell path.",
+          "default": false,
+          "type": "boolean"
+        },
+        "enabled": {
+          "description": "Whether remote terminal sessions are enabled on this agent.",
+          "default": false,
+          "type": "boolean"
+        },
+        "max_sessions": {
+          "description": "Maximum number of concurrent terminal sessions. Defaults to 100.",
+          "default": 100,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "shell": {
+          "description": "Path to the shell binary. Empty string means platform default.",
+          "default": "",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

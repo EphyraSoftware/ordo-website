@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OrchestratorConfig",
+  "description": "Orchestrator runtime configuration.",
+  "type": "object",
+  "required": [
+    "advertised_host",
+    "agent_port",
+    "api_host",
+    "api_port"
+  ],
+  "properties": {
+    "advertised_host": {
+      "description": "Address advertised to agents during discovery; auto-detected if empty.",
+      "type": "string"
+    },
+    "agent_port": {
+      "description": "TCP port on which the orchestrator accepts agent connections.",
+      "type": "integer",
+      "format": "uint16",
+      "minimum": 0.0
+    },
+    "api_host": {
+      "description": "Interface address to bind the management API.",
+      "type": "string"
+    },
+    "api_port": {
+      "description": "HTTP port on which the management API is served.",
+      "type": "integer",
+      "format": "uint16",
+      "minimum": 0.0
+    },
+    "audit": {
+      "description": "Audit-log retention configuration.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/AuditConfig"
+        }
+      ]
+    },
+    "bootstrap_key": {
+      "description": "Hex-encoded Ed25519 public key for the bootstrap operator.\n\nRequired on first run when no operators exist. Ignored on subsequent starts once a bootstrap operator is persisted.",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "bootstrap_username": {
+      "description": "Human-readable username for the bootstrap operator.\n\nRequired on first run alongside [`bootstrap_key`]. Ignored on subsequent starts. Must satisfy [`ordo_store::validate_identifier`]: 1-64 Unicode letters/digits/`-`/`_`, starting with a letter.\n\n[`bootstrap_key`]: OrchestratorConfig::bootstrap_key",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "drift": {
+      "description": "Drift detection scheduling and retention configuration.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/DriftConfig"
+        }
+      ]
+    },
+    "metrics": {
+      "description": "Metrics polling and retention configuration.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/MetricsConfig"
+        }
+      ]
+    },
+    "pending_capacity": {
+      "description": "Maximum number of simultaneously pending agents awaiting approval.",
+      "default": 100,
+      "type": "integer",
+      "format": "uint",
+      "minimum": 0.0
+    },
+    "session_token_expiry_secs": {
+      "description": "How many seconds a session token remains valid before expiring.",
+      "default": 3600,
+      "type": "integer",
+      "format": "uint64",
+      "minimum": 0.0
+    },
+    "tls_cert": {
+      "description": "Path to a PEM-encoded TLS certificate file.\n\nWhen set alongside [`tls_key`], overrides the auto-generated self-signed certificate. Must be provided together with [`tls_key`] or startup fails.\n\n[`tls_key`]: OrchestratorConfig::tls_key",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tls_enabled": {
+      "description": "Whether TLS is enabled for the management API. Defaults to `true`.\n\nWhen `false`, the management API is served over plaintext HTTP and any `tls_cert` / `tls_key` values are ignored (with a warning on startup). See design `0016-encrypted-http-api.md`.",
+      "default": true,
+      "type": "boolean"
+    },
+    "tls_key": {
+      "description": "Path to a PEM-encoded TLS private key file.\n\nRequired when [`tls_cert`] is set.\n\n[`tls_cert`]: OrchestratorConfig::tls_cert",
+      "default": null,
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "trust_proxy_tls": {
+      "description": "Whether a TLS-terminating reverse proxy fronts the management API. Defaults to `false`.\n\nWhen [`tls_enabled`] is `false` (the `--no-tls` opt-out), the orchestrator normally rejects secret create and update requests so plaintext secret values never traverse an unencrypted connection (see design `0014-secrets.md`). Setting this to `true` asserts that a reverse proxy terminates TLS in front of the orchestrator, so the operator-facing hop is encrypted even though the orchestrator listens over plaintext HTTP. It permits secret writes under `--no-tls`. It has no effect when [`tls_enabled`] is `true`.\n\n[`tls_enabled`]: OrchestratorConfig::tls_enabled",
+      "default": false,
+      "type": "boolean"
+    }
+  },
+  "definitions": {
+    "AuditConfig": {
+      "description": "Configuration for the orchestrator's audit-log retention behaviour.\n\n`retention_days` is the *configuration-file* default. The currently active retention is read from the operational store at runtime; if no operator override has been set, the orchestrator seeds the stored value from this config on startup. A value of `0` (or omitting the field entirely) means \"no automatic pruning\" — events accumulate until pruned manually.",
+      "type": "object",
+      "properties": {
+        "retention_days": {
+          "description": "Default retention period in days, or `0` to disable automatic pruning. Used as the seed value when the operational store has no override.",
+          "default": 90,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "DriftConfig": {
+      "description": "Configuration for drift detection scheduling and retention.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether periodic drift checking is enabled. Defaults to `true`.",
+          "default": true,
+          "type": "boolean"
+        },
+        "interval": {
+          "description": "Seconds between drift checks per agent. Defaults to 3600 (1 hour).",
+          "default": 3600,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "max_concurrent": {
+          "description": "Maximum number of in-flight drift checks across all agents. Defaults to 8.",
+          "default": 8,
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
+        },
+        "retention_days": {
+          "description": "How long to retain drift records, in days. Defaults to 30.",
+          "default": 30,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "skip_recently_applied": {
+          "description": "Suppress periodic drift checks for this many seconds after an apply completes. Defaults to 300 (5 minutes).",
+          "default": 300,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "MetricsConfig": {
+      "description": "Configuration for the orchestrator's metrics collection behaviour.",
+      "type": "object",
+      "properties": {
+        "poll_interval": {
+          "description": "How often the orchestrator polls connected agents for metrics, in seconds.",
+          "default": 60,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "retention": {
+          "description": "How long to retain metrics samples, in seconds.",
+          "default": 86400,
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    }
+  }
+}
