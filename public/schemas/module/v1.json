@@ -1,0 +1,1158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Module",
+  "description": "A state module.\n\nContains a unique name, the configurations the module is intended to apply to (`supports`), optional named templates, and an ordered list of resources. Each resource is either universal (one declaration that applies to every supported configuration) or has a list of variants gated on attribute matching.",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "description": "Stable identity of this module, used in conflict detection reports and orchestrator-side references.",
+      "type": "string"
+    },
+    "resources": {
+      "description": "Resource declarations, applied in declaration order unless overridden by resource-level `depends_on`.",
+      "default": [],
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Resource"
+      }
+    },
+    "supports": {
+      "description": "Attribute combinations this module is designed for. A non-empty list. An agent matching no clause is rejected before any per-resource work.",
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "templates": {
+      "description": "Named, content-only fragments that resources may reference.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Template"
+      }
+    }
+  },
+  "definitions": {
+    "DirectoryUnixResource": {
+      "description": "A Unix directory resource declaration.\n\nIdentity: `path`.",
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "group": {
+          "description": "Owner group name.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mode": {
+          "description": "Permissions as an octal string (e.g. `\"0755\"`).",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "owner": {
+          "description": "Owner username.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "description": "Absolute path beginning with `/`.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DirectoryWindowsResource": {
+      "description": "A Windows directory resource declaration.\n\nIdentity: `path`.",
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "description": "Absolute path beginning with a drive letter.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FileUnixResource": {
+      "description": "A Unix file resource declaration.\n\nIdentity: `path`.",
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "content": {
+          "description": "Inline file content. Mutually exclusive with `template`.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "group": {
+          "description": "Owner group name.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mode": {
+          "description": "File permissions as an octal string (e.g. `\"0644\"`).",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "owner": {
+          "description": "Owner username.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "description": "Absolute path. Must begin with `/`.",
+          "type": "string"
+        },
+        "template": {
+          "description": "Reference to a top-level template id. Mutually exclusive with `content`.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "FileWindowsResource": {
+      "description": "A Windows file resource declaration.\n\nIdentity: `path`.",
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "content": {
+          "description": "Inline file content. Mutually exclusive with `template`.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "description": "Absolute path. Must begin with a drive letter (e.g. `C:\\` or `C:/`).",
+          "type": "string"
+        },
+        "template": {
+          "description": "Reference to a top-level template id. Mutually exclusive with `content`.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "GroupUnixResource": {
+      "description": "A Unix group declaration.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "gid": {
+          "description": "Numeric group id.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "name": {
+          "description": "Group name.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "GroupWindowsResource": {
+      "description": "A Windows local group declaration.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "description": "Free-text description.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Group name.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PackageResource": {
+      "description": "A package resource declaration.\n\nSame shape for every package manager; the manager is selected by the surrounding `ResourceKind` variant.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "description": "Package identifier as known to the manager.",
+          "type": "string"
+        },
+        "version": {
+          "description": "`latest` (default if absent) or a specific version string.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Resource": {
+      "description": "A single resource declaration within a module.\n\nUniversal resources have a single body; variant resources have multiple variants gated by `when` clauses. Common fields (`name`, `id`, `depends_on`) sit alongside the body in YAML.",
+      "type": "object",
+      "anyOf": [
+        {
+          "description": "One declaration that applies on every supported configuration.",
+          "type": "object",
+          "required": [
+            "resource"
+          ],
+          "properties": {
+            "resource": {
+              "description": "The single resource payload.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ResourceKind"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "description": "A list of `{ when, resource }` pairs; the most specific matching variant is selected per agent.",
+          "type": "object",
+          "required": [
+            "variants"
+          ],
+          "properties": {
+            "variants": {
+              "description": "Variant entries. Order is preserved for diagnostics; resolution is by specificity, not order.",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Variant"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "depends_on": {
+          "description": "Resource ids within this module that must apply before this resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "description": "Optional identifier, unique within the module. Required when this resource is referenced by another resource's `depends_on`.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Optional human-readable label used in diagnostics and reports.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "ResourceKind": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "script"
+          ],
+          "properties": {
+            "script": {
+              "$ref": "#/definitions/ScriptResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "package-apt"
+          ],
+          "properties": {
+            "package-apt": {
+              "$ref": "#/definitions/PackageResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "package-dnf"
+          ],
+          "properties": {
+            "package-dnf": {
+              "$ref": "#/definitions/PackageResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "package-winget"
+          ],
+          "properties": {
+            "package-winget": {
+              "$ref": "#/definitions/PackageResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "package-choco"
+          ],
+          "properties": {
+            "package-choco": {
+              "$ref": "#/definitions/PackageResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "package-brew"
+          ],
+          "properties": {
+            "package-brew": {
+              "$ref": "#/definitions/PackageResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "file-unix"
+          ],
+          "properties": {
+            "file-unix": {
+              "$ref": "#/definitions/FileUnixResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "file-windows"
+          ],
+          "properties": {
+            "file-windows": {
+              "$ref": "#/definitions/FileWindowsResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "directory-unix"
+          ],
+          "properties": {
+            "directory-unix": {
+              "$ref": "#/definitions/DirectoryUnixResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "directory-windows"
+          ],
+          "properties": {
+            "directory-windows": {
+              "$ref": "#/definitions/DirectoryWindowsResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "service-systemd"
+          ],
+          "properties": {
+            "service-systemd": {
+              "$ref": "#/definitions/ServiceSystemdResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "service-launchd"
+          ],
+          "properties": {
+            "service-launchd": {
+              "$ref": "#/definitions/ServiceLaunchdResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "service-windows"
+          ],
+          "properties": {
+            "service-windows": {
+              "$ref": "#/definitions/ServiceWindowsResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "user-unix"
+          ],
+          "properties": {
+            "user-unix": {
+              "$ref": "#/definitions/UserUnixResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "user-windows"
+          ],
+          "properties": {
+            "user-windows": {
+              "$ref": "#/definitions/UserWindowsResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "group-unix"
+          ],
+          "properties": {
+            "group-unix": {
+              "$ref": "#/definitions/GroupUnixResource"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "group-windows"
+          ],
+          "properties": {
+            "group-windows": {
+              "$ref": "#/definitions/GroupWindowsResource"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "RestartPolicy": {
+      "description": "Restart policy for a service.",
+      "oneOf": [
+        {
+          "description": "Always restart the service when it exits.",
+          "type": "string",
+          "enum": [
+            "always"
+          ]
+        },
+        {
+          "description": "Restart only when the service exits with a non-zero status.",
+          "type": "string",
+          "enum": [
+            "on_failure"
+          ]
+        },
+        {
+          "description": "Never restart automatically.",
+          "type": "string",
+          "enum": [
+            "never"
+          ]
+        }
+      ]
+    },
+    "ScriptResource": {
+      "description": "A script resource declaration.\n\nIdentity: `manages` if set, otherwise the resource's `id` (via the surrounding `Resource`).",
+      "type": "object",
+      "required": [
+        "apply",
+        "program"
+      ],
+      "properties": {
+        "apply": {
+          "description": "Script body run when applying the resource.",
+          "type": "string"
+        },
+        "check": {
+          "description": "Optional idempotency probe. Exit 0 = resource matches desired state.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "manages": {
+          "description": "Optional logical identity for state tracking. If absent, the resource's `id` is used.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "program": {
+          "description": "Interpreter to invoke. Supported values: `sh`, `bash`, `pwsh`, `powershell`, `cmd`.",
+          "type": "string"
+        },
+        "undo": {
+          "description": "Optional reversal script. Run when the resource is removed.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServiceLaunchdResource": {
+      "description": "A launchd `LaunchDaemon` declaration.\n\nIdentity: `name`. v1 covers `LaunchDaemons` (system scope) only.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "description": "Free-text description. Not written to the plist (launchd has no description field); captured in audit and plan output.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "enabled": {
+          "description": "Whether the job is enabled at boot.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "environment": {
+          "description": "Environment variables written as `EnvironmentVariables`.",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "group": {
+          "description": "`GroupName` for the plist.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "keep_alive": {
+          "description": "`KeepAlive` boolean. v1 exposes the boolean form only.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Job label. Becomes the plist `Label` and the filename `/Library/LaunchDaemons/<name>.plist`.",
+          "type": "string"
+        },
+        "program_arguments": {
+          "description": "`ProgramArguments` (argv, executable first). If absent, the job must already exist on the machine.",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "run_at_load": {
+          "description": "`RunAtLoad` boolean. Distinct from `enabled`: `run_at_load` is whether launchd starts the job when the plist is loaded; `enabled` is whether the plist is loaded at boot.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "running": {
+          "description": "Whether the job is currently running.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "standard_error_path": {
+          "description": "`StandardErrorPath` absolute path.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "standard_out_path": {
+          "description": "`StandardOutPath` absolute path.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "user": {
+          "description": "`UserName` for the plist.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "working_directory": {
+          "description": "Absolute path used as `WorkingDirectory`.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServiceSystemdResource": {
+      "description": "A systemd service unit declaration.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "dependencies": {
+          "description": "`After=`/`Requires=` unit names.",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Free-text description (`Description=` in the unit file).",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "enabled": {
+          "description": "Whether the service starts on boot.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "environment": {
+          "description": "Environment variables (deterministic order).",
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "exec_start": {
+          "description": "Command to run. If absent, the unit must already exist on the machine.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "group": {
+          "description": "Group to run the service as.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Service name (without `.service`).",
+          "type": "string"
+        },
+        "restart": {
+          "description": "Restart policy: `always`, `on_failure`, or `never`.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RestartPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "running": {
+          "description": "Whether the service is currently running.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "type": {
+          "description": "Unit type: `simple` (default), `exec`, `forking`, `oneshot`, `notify`, `dbus`, `idle`. The field is named `type` in YAML.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SystemdUnitType"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user": {
+          "description": "User to run the service as.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "working_directory": {
+          "description": "Working directory (absolute path).",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ServiceWindowsResource": {
+      "description": "A Windows service declaration.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "account": {
+          "description": "Service account: `LocalSystem`, `LocalService`, `NetworkService`, or a username.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "binary_path": {
+          "description": "Command to run. If absent, the service must already exist on the machine.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dependencies": {
+          "description": "Service dependencies.",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Free-text description.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "display_name": {
+          "description": "Display name shown in the Services snap-in.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Service name.",
+          "type": "string"
+        },
+        "running": {
+          "description": "Whether the service is currently running.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "start_type": {
+          "description": "Start type: `auto`, `auto_delayed`, `manual`, or `disabled`.",
+          "default": null,
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WindowsStartType"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SystemdUnitType": {
+      "description": "systemd unit types.",
+      "oneOf": [
+        {
+          "description": "Default. The process started by `ExecStart=` is the main process.",
+          "type": "string",
+          "enum": [
+            "simple"
+          ]
+        },
+        {
+          "description": "Like `simple`, but systemd waits for the binary to start successfully.",
+          "type": "string",
+          "enum": [
+            "exec"
+          ]
+        },
+        {
+          "description": "The process forks and the parent exits. Systemd tracks the child.",
+          "type": "string",
+          "enum": [
+            "forking"
+          ]
+        },
+        {
+          "description": "The process runs once and exits.",
+          "type": "string",
+          "enum": [
+            "oneshot"
+          ]
+        },
+        {
+          "description": "Like `simple`, but the process signals readiness via `sd_notify`.",
+          "type": "string",
+          "enum": [
+            "notify"
+          ]
+        },
+        {
+          "description": "Like `simple`, but the process acquires a D-Bus name.",
+          "type": "string",
+          "enum": [
+            "dbus"
+          ]
+        },
+        {
+          "description": "Like `simple`, but delayed until all active jobs are dispatched.",
+          "type": "string",
+          "enum": [
+            "idle"
+          ]
+        }
+      ]
+    },
+    "Template": {
+      "description": "A named, content-only fragment that resources may reference.",
+      "type": "object",
+      "required": [
+        "content",
+        "id"
+      ],
+      "properties": {
+        "content": {
+          "description": "The fragment text.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Identifier unique within the module.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UserUnixResource": {
+      "description": "A Unix user account declaration.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "additional_groups": {
+          "description": "Additional supplementary groups.",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "home": {
+          "description": "Absolute home directory path.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Username.",
+          "type": "string"
+        },
+        "primary_group": {
+          "description": "Primary group name.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "shell": {
+          "description": "Login shell absolute path.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "system": {
+          "description": "If `true`, allocate from the system uid range.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "uid": {
+          "description": "Numeric user id. If absent, the system assigns one.",
+          "default": null,
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        }
+      },
+      "additionalProperties": false
+    },
+    "UserWindowsResource": {
+      "description": "A Windows local user account declaration.\n\nIdentity: `name`.",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "account_disabled": {
+          "description": "Whether the account is disabled.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "description": {
+          "description": "Free-text description.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "full_name": {
+          "description": "Display name.",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "groups": {
+          "description": "Local groups to add the user to.",
+          "default": null,
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "description": "Username.",
+          "type": "string"
+        },
+        "password": {
+          "description": "Password (typically supplied via `${{ secrets.* }}`).",
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "password_never_expires": {
+          "description": "Whether the password never expires.",
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Variant": {
+      "description": "A single variant entry within a variant resource.",
+      "type": "object",
+      "required": [
+        "resource",
+        "when"
+      ],
+      "properties": {
+        "resource": {
+          "description": "The resource payload for this variant.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ResourceKind"
+            }
+          ]
+        },
+        "when": {
+          "description": "Attribute clause this variant applies under.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WindowsStartType": {
+      "description": "Windows service start types.",
+      "oneOf": [
+        {
+          "description": "Auto-start at boot.",
+          "type": "string",
+          "enum": [
+            "auto"
+          ]
+        },
+        {
+          "description": "Auto-start, delayed until other auto services have started.",
+          "type": "string",
+          "enum": [
+            "auto_delayed"
+          ]
+        },
+        {
+          "description": "Started manually.",
+          "type": "string",
+          "enum": [
+            "manual"
+          ]
+        },
+        {
+          "description": "Disabled.",
+          "type": "string",
+          "enum": [
+            "disabled"
+          ]
+        }
+      ]
+    }
+  }
+}
