@@ -64,9 +64,20 @@ const docsUrl = 'https://docs.getordo.dev';
 				</p>
 			</section>
 
-			<section>
+			<section id="install">
 				<h2>Install</h2>
-				<p>Install instructions will live here.</p>
+				<p>Linux and macOS:</p>
+				<pre class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh</code></pre>
+				<p>Windows (PowerShell):</p>
+				<pre class="install"><code>irm https://getordo.dev/install.ps1 | iex</code></pre>
+				<p class="muted">
+					The installer downloads a prebuilt binary from <a
+						href="https://dl.getordo.dev">dl.getordo.dev</a
+					>, verifies its SHA-256 checksum, and checks the <a
+						href="/minisign.pub">minisign signature</a
+					> when minisign is installed. Debian and RPM packages are
+					published alongside the archives in the same release.
+				</p>
 			</section>
 		</main>
 
@@ -157,6 +168,21 @@ const docsUrl = 'https://docs.getordo.dev';
 			}
 			.cta:hover {
 				background: #333;
+			}
+			.install {
+				font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas,
+					monospace;
+				font-size: 0.9rem;
+				background: #f0efe9;
+				border: 1px solid var(--rule);
+				border-radius: 2px;
+				padding: 0.75rem 1rem;
+				margin: 0 0 1rem;
+				overflow-x: auto;
+			}
+			.muted {
+				color: var(--muted);
+				font-size: 0.95rem;
 			}
 			footer {
 				border-top: 1px solid var(--rule);
