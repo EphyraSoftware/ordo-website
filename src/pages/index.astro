@@ -18,7 +18,9 @@ const docsUrl = 'https://docs.getordo.dev';
 		<header>
 			<a href="/" class="brand">Ordo</a>
 			<nav>
-				<a href={docsUrl}>Docs</a>
+				<a href="#install">Install</a>
+					<a href="#schemas">Schemas</a>
+					<a href={docsUrl}>Docs</a>
 			</nav>
 		</header>
 
@@ -89,11 +91,44 @@ const docsUrl = 'https://docs.getordo.dev';
 				<p class="muted">
 					On Windows, <code>irm https://getordo.dev/install.ps1 | iex</code
 					> installs the client tools. The installer downloads a prebuilt
-					binary from <a href="https://dl.getordo.dev">dl.getordo.dev</a>,
+					binary from <code>dl.getordo.dev</code>,
 					verifies its SHA-256 checksum, and checks the <a
 						href="/minisign.pub">minisign signature</a
 					> when minisign is installed. Debian and RPM packages are
 					published alongside the archives in the same release.
+				</p>
+			</section>
+
+			<section id="schemas">
+				<h2>Editor schemas</h2>
+				<p>
+					Machine-readable JSON Schemas for Ordo's module and
+					configuration files — point your editor at them for
+					autocompletion and validation:
+				</p>
+				<ul class="schemas">
+					<li>
+						Module files —
+						<code>https://getordo.dev/schemas/module/v1.json</code>
+					</li>
+					<li>
+						Orchestrator config —
+						<code
+							>https://getordo.dev/schemas/orchestrator-config/v1.json</code
+						>
+					</li>
+					<li>
+						Agent config —
+						<code>https://getordo.dev/schemas/agent-config/v1.json</code
+						>
+					</li>
+				</ul>
+				<p>In a module file, add a modeline:</p>
+				<pre
+					class="install"><code># yaml-language-server: $schema=https://getordo.dev/schemas/module/v1.json</code></pre>
+				<p class="muted">
+					See the <a href={`${docsUrl}/reference/`}>reference docs</a> for
+					VS Code and JetBrains setup.
 				</p>
 			</section>
 		</main>
@@ -200,6 +235,17 @@ const docsUrl = 'https://docs.getordo.dev';
 			.muted {
 				color: var(--muted);
 				font-size: 0.95rem;
+			}
+			.schemas {
+				margin: 0 0 1rem;
+				padding-left: 1.25rem;
+			}
+			.schemas li {
+				margin-bottom: 0.35rem;
+			}
+			.schemas code,
+			.install code {
+				word-break: break-all;
 			}
 			footer {
 				border-top: 1px solid var(--rule);
