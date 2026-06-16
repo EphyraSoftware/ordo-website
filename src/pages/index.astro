@@ -19,8 +19,8 @@ const docsUrl = 'https://docs.getordo.dev';
 			<a href="/" class="brand">Ordo</a>
 			<nav>
 				<a href="#install">Install</a>
-					<a href="#schemas">Schemas</a>
-					<a href={docsUrl}>Docs</a>
+				<a href="#schemas">Schemas</a>
+				<a href={docsUrl}>Docs</a>
 			</nav>
 		</header>
 
@@ -91,9 +91,9 @@ const docsUrl = 'https://docs.getordo.dev';
 				<p class="muted">
 					On Windows, <code>irm https://getordo.dev/install.ps1 | iex</code
 					> installs the client tools. The installer downloads a prebuilt
-					binary from <code>dl.getordo.dev</code>,
-					verifies its SHA-256 checksum, and checks the <a
-						href="/minisign.pub">minisign signature</a
+					binary from <code>dl.getordo.dev</code>, verifies its SHA-256
+					checksum, and checks the <a href="/minisign.pub"
+						>minisign signature</a
 					> when minisign is installed. Debian and RPM packages are
 					published alongside the archives in the same release.
 				</p>
@@ -103,23 +103,33 @@ const docsUrl = 'https://docs.getordo.dev';
 				<h2>Editor schemas</h2>
 				<p>
 					Machine-readable JSON Schemas for Ordo's module and
-					configuration files — point your editor at them for
-					autocompletion and validation:
+					configuration files. Associate each with the matching file
+					pattern in your editor for autocompletion and validation:
 				</p>
 				<ul class="schemas">
 					<li>
-						Module files —
-						<code>https://getordo.dev/schemas/module/v1.json</code>
-					</li>
-					<li>
-						Orchestrator config —
-						<code
-							>https://getordo.dev/schemas/orchestrator-config/v1.json</code
+						<strong>Module files</strong> (<code>*.ordo.yaml</code>) —
+						<a href="https://getordo.dev/schemas/module/v1.json"
+							><code>https://getordo.dev/schemas/module/v1.json</code></a
 						>
 					</li>
 					<li>
-						Agent config —
-						<code>https://getordo.dev/schemas/agent-config/v1.json</code
+						<strong>Orchestrator config</strong> (<code
+							>orchestrator.yaml</code
+						>) —
+						<a
+							href="https://getordo.dev/schemas/orchestrator-config/v1.json"
+							><code
+								>https://getordo.dev/schemas/orchestrator-config/v1.json</code
+							></a
+						>
+					</li>
+					<li>
+						<strong>Agent config</strong> (<code>agent.yaml</code>) —
+						<a href="https://getordo.dev/schemas/agent-config/v1.json"
+							><code
+								>https://getordo.dev/schemas/agent-config/v1.json</code
+							></a
 						>
 					</li>
 				</ul>
@@ -183,6 +193,9 @@ const docsUrl = 'https://docs.getordo.dev';
 			}
 			nav a:hover {
 				color: var(--text);
+			}
+			nav a + a {
+				margin-left: 1rem;
 			}
 			main {
 				padding-top: 3rem;
