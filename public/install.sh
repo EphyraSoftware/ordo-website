@@ -1,18 +1,19 @@
 #!/bin/sh
 # Ordo installer for Linux and macOS.
 #
-# Each component installs on the machine that runs it:
-#   ordo               operator/client tools    curl -fsSL https://getordo.dev/install.sh | sh
-#   ordo-orchestrator  the orchestrator host    curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-orchestrator
-#   ordo-agent         a managed machine        curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-agent
+# With no argument it installs the operator/client tools (ordo and ordo-state).
+# Pass a component to install just that one:
+#   ordo / ordo-state   operator/client     curl -fsSL https://getordo.dev/install.sh | sh
+#   ordo-orchestrator   orchestrator host   curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-orchestrator
+#   ordo-agent          a managed machine   curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-agent
 #
-# Downloads a prebuilt binary from https://dl.getordo.dev, verifies its SHA-256
-# checksum (always) and its minisign signature (when minisign is installed),
-# and installs it. The component may also be set with ORDO_BIN.
+# Downloads prebuilt binaries from https://dl.getordo.dev, verifies their SHA-256
+# checksums (always) and the minisign signature (when minisign is installed),
+# and installs them. A single component may also be set with ORDO_BIN.
 #
 # Environment overrides:
 #   ORDO_BIN          component to install (alternative to the positional argument)
-#   ORDO_VERSION      latest (default) or a tag like v0.0.5
+#   ORDO_VERSION      latest (default) or a tag like v0.0.6
 #   ORDO_INSTALL_DIR  install directory (default /usr/local/bin)
 set -eu
 
@@ -20,8 +21,6 @@ BASE_URL="https://dl.getordo.dev"
 # Pinned Ordo minisign public key (see https://getordo.dev/minisign.pub).
 PUBKEY="RWRd9zVINZTXqb/dImYYNVWuPwjPSzRTcKaKnd7yZw7Iltt+tEArKFtv"
 
-# Component to install: positional argument, then ORDO_BIN, then the default.
-BIN="${1:-${ORDO_BIN:-ordo}}"
 VERSION="${ORDO_VERSION:-latest}"
 INSTALL_DIR="${ORDO_INSTALL_DIR:-/usr/local/bin}"
 
@@ -37,10 +36,22 @@ need() {
 need curl
 need tar
 
-case "$BIN" in
-ordo | ordo-agent | ordo-orchestrator) ;;
-*) err "unknown component: $BIN (expected ordo, ordo-agent, or ordo-orchestrator)" ;;
-esac
+# Components to install: an explicit argument or ORDO_BIN selects one; the
+# default installs the operator/client tools.
+if [ "$#" -ge 1 ]; then
+	BINS="$1"
+elif [ -n "${ORDO_BIN:-}" ]; then
+	BINS="$ORDO_BIN"
+else
+	BINS="ordo ordo-state"
+fi
+
+for b in $BINS; do
+	case "$b" in
+	ordo | ordo-state | ordo-agent | ordo-orchestrator) ;;
+	*) err "unknown component: $b (expected ordo, ordo-state, ordo-agent, or ordo-orchestrator)" ;;
+	esac
+done
 
 # Resolve the target triple from the host OS and architecture.
 os="$(uname -s)"
@@ -73,15 +84,10 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
 # The checksum file lists every asset for the release; use it to discover the
-# exact (version-stamped) filename for this binary and target, and to verify it.
+# exact (version-stamped) filenames and to verify each download.
 curl -fsSL "$prefix/SHA256SUMS" -o "$tmp/SHA256SUMS" ||
 	err "could not fetch $prefix/SHA256SUMS"
 curl -fsSL "$prefix/SHA256SUMS.minisig" -o "$tmp/SHA256SUMS.minisig" 2>/dev/null || true
-
-# Match "<bin>-v<version>-<target>.tar.gz" without matching a different binary
-# whose name shares the prefix (e.g. ordo vs ordo-agent).
-asset="$(awk -v p="^${BIN}-v[0-9].*-${target}[.]tar[.]gz$" '$2 ~ p { print $2 }' "$tmp/SHA256SUMS" | head -n1)"
-[ -n "$asset" ] || err "no ${BIN} build for ${target} in ${prefix}"
 
 # Verify the checksum file's signature when minisign is available; this is the
 # only check that detects a tampered host, so warn clearly when it is skipped.
@@ -94,29 +100,41 @@ else
 	echo "note: minisign not installed; skipping signature check (checksum still verified)" >&2
 fi
 
-curl -fsSL "$prefix/$asset" -o "$tmp/$asset" || err "could not download $prefix/$asset"
+verify_sha256() {
+	# verify_sha256 <expected> <file>
+	if command -v sha256sum >/dev/null 2>&1; then
+		echo "$1  $2" | sha256sum -c - >/dev/null
+	elif command -v shasum >/dev/null 2>&1; then
+		echo "$1  $2" | shasum -a 256 -c - >/dev/null
+	else
+		err "no sha256 tool found (need sha256sum or shasum)"
+	fi
+}
 
-# Verify the downloaded archive against its line in SHA256SUMS.
-expected="$(awk -v a="$asset" '$2 == a { print $1 }' "$tmp/SHA256SUMS")"
-if command -v sha256sum >/dev/null 2>&1; then
-	echo "$expected  $tmp/$asset" | sha256sum -c - >/dev/null || err "checksum mismatch for $asset"
-elif command -v shasum >/dev/null 2>&1; then
-	echo "$expected  $tmp/$asset" | shasum -a 256 -c - >/dev/null || err "checksum mismatch for $asset"
-else
-	err "no sha256 tool found (need sha256sum or shasum)"
-fi
-echo "checksum verified"
+install_one() {
+	bin="$1"
+	# Match "<bin>-v<version>-<target>.tar.gz" without matching a different
+	# binary whose name shares the prefix (e.g. ordo vs ordo-state).
+	asset="$(awk -v p="^${bin}-v[0-9].*-${target}[.]tar[.]gz$" '$2 ~ p { print $2 }' "$tmp/SHA256SUMS" | head -n1)"
+	[ -n "$asset" ] || err "no ${bin} build for ${target} in ${prefix}"
 
-tar -xzf "$tmp/$asset" -C "$tmp" || err "could not extract $asset"
-[ -f "$tmp/$BIN" ] || err "archive did not contain expected binary: $BIN"
+	curl -fsSL "$prefix/$asset" -o "$tmp/$asset" || err "could not download $prefix/$asset"
+	expected="$(awk -v a="$asset" '$2 == a { print $1 }' "$tmp/SHA256SUMS")"
+	verify_sha256 "$expected" "$tmp/$asset" || err "checksum mismatch for $asset"
 
-if [ -w "$INSTALL_DIR" ]; then
-	install -m 0755 "$tmp/$BIN" "$INSTALL_DIR/$BIN"
-elif command -v sudo >/dev/null 2>&1; then
-	echo "installing to $INSTALL_DIR (requires sudo)"
-	sudo install -m 0755 "$tmp/$BIN" "$INSTALL_DIR/$BIN"
-else
-	err "$INSTALL_DIR is not writable and sudo is not available; set ORDO_INSTALL_DIR"
-fi
+	tar -xzf "$tmp/$asset" -C "$tmp" || err "could not extract $asset"
+	[ -f "$tmp/$bin" ] || err "archive did not contain expected binary: $bin"
 
-echo "installed $BIN to $INSTALL_DIR/$BIN"
+	if [ -w "$INSTALL_DIR" ]; then
+		install -m 0755 "$tmp/$bin" "$INSTALL_DIR/$bin"
+	elif command -v sudo >/dev/null 2>&1; then
+		sudo install -m 0755 "$tmp/$bin" "$INSTALL_DIR/$bin"
+	else
+		err "$INSTALL_DIR is not writable and sudo is not available; set ORDO_INSTALL_DIR"
+	fi
+	echo "installed $bin to $INSTALL_DIR/$bin"
+}
+
+for b in $BINS; do
+	install_one "$b"
+done
