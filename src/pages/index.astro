@@ -66,14 +66,28 @@ const docsUrl = 'https://docs.getordo.dev';
 
 			<section id="install">
 				<h2>Install</h2>
-				<p>Linux and macOS:</p>
-				<pre class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh</code></pre>
-				<p>Windows (PowerShell):</p>
-				<pre class="install"><code>irm https://getordo.dev/install.ps1 | iex</code></pre>
+				<p>
+					Each component installs on the machine that runs it. On Linux
+					and macOS:
+				</p>
+
+				<p><strong>Operator / client tools</strong> — your workstation:</p>
+				<pre
+					class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh</code></pre>
+
+				<p><strong>Orchestrator</strong> — the control host:</p>
+				<pre
+					class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-orchestrator</code></pre>
+
+				<p><strong>Agent</strong> — each managed machine:</p>
+				<pre
+					class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-agent</code></pre>
+
 				<p class="muted">
-					The installer downloads a prebuilt binary from <a
-						href="https://dl.getordo.dev">dl.getordo.dev</a
-					>, verifies its SHA-256 checksum, and checks the <a
+					On Windows, <code>irm https://getordo.dev/install.ps1 | iex</code
+					> installs the client tools. The installer downloads a prebuilt
+					binary from <a href="https://dl.getordo.dev">dl.getordo.dev</a>,
+					verifies its SHA-256 checksum, and checks the <a
 						href="/minisign.pub">minisign signature</a
 					> when minisign is installed. Debian and RPM packages are
 					published alongside the archives in the same release.

@@ -1,18 +1,26 @@
 # Ordo installer for Windows.
 #
-#   irm https://getordo.dev/install.ps1 | iex
+#   irm https://getordo.dev/install.ps1 | iex                  # ordo (operator/client tools)
+#
+# For another component, pass -Bin (piping to iex cannot forward arguments, so
+# build a scriptblock):
+#   & ([scriptblock]::Create((irm https://getordo.dev/install.ps1))) -Bin ordo-agent
 #
 # Downloads a prebuilt binary from https://dl.getordo.dev, verifies its SHA-256
 # checksum, and installs it under %LOCALAPPDATA%\Ordo\bin (added to the user PATH).
 #
 # Environment overrides:
-#   ORDO_BIN      binary to install: ordo (default), ordo-agent, ordo-orchestrator
+#   ORDO_BIN      component to install (alternative to -Bin)
 #   ORDO_VERSION  latest (default) or a tag like v0.0.5
 #Requires -Version 5
+param([string]$Bin)
 $ErrorActionPreference = 'Stop'
 
 $BaseUrl = 'https://dl.getordo.dev'
-$Bin = if ($env:ORDO_BIN) { $env:ORDO_BIN } else { 'ordo' }
+if (-not $Bin) { $Bin = if ($env:ORDO_BIN) { $env:ORDO_BIN } else { 'ordo' } }
+if ($Bin -notin @('ordo', 'ordo-agent', 'ordo-orchestrator')) {
+	throw "unknown component: $Bin (expected ordo, ordo-agent, or ordo-orchestrator)"
+}
 $Version = if ($env:ORDO_VERSION) { $env:ORDO_VERSION } else { 'latest' }
 $Target = 'x86_64-pc-windows-msvc'
 $Prefix = if ($Version -eq 'latest') { "$BaseUrl/latest" } else { "$BaseUrl/$Version" }

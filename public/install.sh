@@ -1,14 +1,17 @@
 #!/bin/sh
 # Ordo installer for Linux and macOS.
 #
-#   curl -fsSL https://getordo.dev/install.sh | sh
+# Each component installs on the machine that runs it:
+#   ordo               operator/client tools    curl -fsSL https://getordo.dev/install.sh | sh
+#   ordo-orchestrator  the orchestrator host    curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-orchestrator
+#   ordo-agent         a managed machine        curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-agent
 #
 # Downloads a prebuilt binary from https://dl.getordo.dev, verifies its SHA-256
 # checksum (always) and its minisign signature (when minisign is installed),
-# and installs it.
+# and installs it. The component may also be set with ORDO_BIN.
 #
 # Environment overrides:
-#   ORDO_BIN          binary to install: ordo (default), ordo-agent, ordo-orchestrator
+#   ORDO_BIN          component to install (alternative to the positional argument)
 #   ORDO_VERSION      latest (default) or a tag like v0.0.5
 #   ORDO_INSTALL_DIR  install directory (default /usr/local/bin)
 set -eu
@@ -17,7 +20,8 @@ BASE_URL="https://dl.getordo.dev"
 # Pinned Ordo minisign public key (see https://getordo.dev/minisign.pub).
 PUBKEY="RWRd9zVINZTXqb/dImYYNVWuPwjPSzRTcKaKnd7yZw7Iltt+tEArKFtv"
 
-BIN="${ORDO_BIN:-ordo}"
+# Component to install: positional argument, then ORDO_BIN, then the default.
+BIN="${1:-${ORDO_BIN:-ordo}}"
 VERSION="${ORDO_VERSION:-latest}"
 INSTALL_DIR="${ORDO_INSTALL_DIR:-/usr/local/bin}"
 
@@ -32,6 +36,11 @@ need() {
 
 need curl
 need tar
+
+case "$BIN" in
+ordo | ordo-agent | ordo-orchestrator) ;;
+*) err "unknown component: $BIN (expected ordo, ordo-agent, or ordo-orchestrator)" ;;
+esac
 
 # Resolve the target triple from the host OS and architecture.
 os="$(uname -s)"
