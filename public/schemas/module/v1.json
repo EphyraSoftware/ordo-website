@@ -24,10 +24,7 @@
       "default": [],
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "string"
-        }
+        "$ref": "#/definitions/AttributeClause"
       }
     },
     "templates": {
@@ -39,6 +36,55 @@
     }
   },
   "definitions": {
+    "AttributeClause": {
+      "description": "A set of agent attribute constraints. The clause matches an agent when every key equals the agent's attribute value exactly; omitted keys are unconstrained. Keys are the built-in attributes below or operator-defined `tag.<name>` keys.",
+      "type": "object",
+      "properties": {
+        "arch": {
+          "description": "CPU architecture.",
+          "type": "string",
+          "enum": [
+            "x86_64",
+            "aarch64",
+            "armv7"
+          ]
+        },
+        "distro": {
+          "description": "Linux distribution id. Known values: ubuntu, debian, rhel, fedora, alma, rocky, arch, alpine. Other values are accepted with a warning.",
+          "type": "string"
+        },
+        "init_system": {
+          "description": "Service manager in use on the agent.",
+          "type": "string",
+          "enum": [
+            "systemd",
+            "openrc",
+            "init.d",
+            "launchd",
+            "scm"
+          ]
+        },
+        "platform": {
+          "description": "Operating system family. Always present on an agent.",
+          "type": "string",
+          "enum": [
+            "linux",
+            "windows",
+            "macos"
+          ]
+        },
+        "version": {
+          "description": "OS or distribution version string.",
+          "type": "string"
+        }
+      },
+      "patternProperties": {
+        "^tag\\.[^\\s]+$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "DirectoryUnixResource": {
       "description": "A Unix directory resource declaration.\n\nIdentity: `path`.",
       "type": "object",
@@ -306,212 +352,64 @@
       }
     },
     "ResourceKind": {
-      "oneOf": [
-        {
-          "type": "object",
-          "required": [
-            "script"
-          ],
-          "properties": {
-            "script": {
-              "$ref": "#/definitions/ScriptResource"
-            }
-          },
-          "additionalProperties": false
+      "description": "A resource declaration. Provide exactly one resource-type key (for example `package-apt`, `file-unix`, or `service-systemd`).",
+      "type": "object",
+      "maxProperties": 1,
+      "minProperties": 1,
+      "properties": {
+        "directory-unix": {
+          "$ref": "#/definitions/DirectoryUnixResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "package-apt"
-          ],
-          "properties": {
-            "package-apt": {
-              "$ref": "#/definitions/PackageResource"
-            }
-          },
-          "additionalProperties": false
+        "directory-windows": {
+          "$ref": "#/definitions/DirectoryWindowsResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "package-dnf"
-          ],
-          "properties": {
-            "package-dnf": {
-              "$ref": "#/definitions/PackageResource"
-            }
-          },
-          "additionalProperties": false
+        "file-unix": {
+          "$ref": "#/definitions/FileUnixResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "package-winget"
-          ],
-          "properties": {
-            "package-winget": {
-              "$ref": "#/definitions/PackageResource"
-            }
-          },
-          "additionalProperties": false
+        "file-windows": {
+          "$ref": "#/definitions/FileWindowsResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "package-choco"
-          ],
-          "properties": {
-            "package-choco": {
-              "$ref": "#/definitions/PackageResource"
-            }
-          },
-          "additionalProperties": false
+        "group-unix": {
+          "$ref": "#/definitions/GroupUnixResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "package-brew"
-          ],
-          "properties": {
-            "package-brew": {
-              "$ref": "#/definitions/PackageResource"
-            }
-          },
-          "additionalProperties": false
+        "group-windows": {
+          "$ref": "#/definitions/GroupWindowsResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "file-unix"
-          ],
-          "properties": {
-            "file-unix": {
-              "$ref": "#/definitions/FileUnixResource"
-            }
-          },
-          "additionalProperties": false
+        "package-apt": {
+          "$ref": "#/definitions/PackageResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "file-windows"
-          ],
-          "properties": {
-            "file-windows": {
-              "$ref": "#/definitions/FileWindowsResource"
-            }
-          },
-          "additionalProperties": false
+        "package-brew": {
+          "$ref": "#/definitions/PackageResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "directory-unix"
-          ],
-          "properties": {
-            "directory-unix": {
-              "$ref": "#/definitions/DirectoryUnixResource"
-            }
-          },
-          "additionalProperties": false
+        "package-choco": {
+          "$ref": "#/definitions/PackageResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "directory-windows"
-          ],
-          "properties": {
-            "directory-windows": {
-              "$ref": "#/definitions/DirectoryWindowsResource"
-            }
-          },
-          "additionalProperties": false
+        "package-dnf": {
+          "$ref": "#/definitions/PackageResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "service-systemd"
-          ],
-          "properties": {
-            "service-systemd": {
-              "$ref": "#/definitions/ServiceSystemdResource"
-            }
-          },
-          "additionalProperties": false
+        "package-winget": {
+          "$ref": "#/definitions/PackageResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "service-launchd"
-          ],
-          "properties": {
-            "service-launchd": {
-              "$ref": "#/definitions/ServiceLaunchdResource"
-            }
-          },
-          "additionalProperties": false
+        "script": {
+          "$ref": "#/definitions/ScriptResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "service-windows"
-          ],
-          "properties": {
-            "service-windows": {
-              "$ref": "#/definitions/ServiceWindowsResource"
-            }
-          },
-          "additionalProperties": false
+        "service-launchd": {
+          "$ref": "#/definitions/ServiceLaunchdResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "user-unix"
-          ],
-          "properties": {
-            "user-unix": {
-              "$ref": "#/definitions/UserUnixResource"
-            }
-          },
-          "additionalProperties": false
+        "service-systemd": {
+          "$ref": "#/definitions/ServiceSystemdResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "user-windows"
-          ],
-          "properties": {
-            "user-windows": {
-              "$ref": "#/definitions/UserWindowsResource"
-            }
-          },
-          "additionalProperties": false
+        "service-windows": {
+          "$ref": "#/definitions/ServiceWindowsResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "group-unix"
-          ],
-          "properties": {
-            "group-unix": {
-              "$ref": "#/definitions/GroupUnixResource"
-            }
-          },
-          "additionalProperties": false
+        "user-unix": {
+          "$ref": "#/definitions/UserUnixResource"
         },
-        {
-          "type": "object",
-          "required": [
-            "group-windows"
-          ],
-          "properties": {
-            "group-windows": {
-              "$ref": "#/definitions/GroupWindowsResource"
-            }
-          },
-          "additionalProperties": false
+        "user-windows": {
+          "$ref": "#/definitions/UserWindowsResource"
         }
-      ]
+      },
+      "additionalProperties": false
     },
     "RestartPolicy": {
       "description": "Restart policy for a service.",
@@ -1114,10 +1012,11 @@
         },
         "when": {
           "description": "Attribute clause this variant applies under.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "allOf": [
+            {
+              "$ref": "#/definitions/AttributeClause"
+            }
+          ]
         }
       }
     },
