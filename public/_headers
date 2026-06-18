@@ -1,0 +1,8 @@
+# Published JSON Schemas are served at stable, version-segmented URLs
+# (/schemas/<name>/v1.json) that editors and CI pin against. Within a major
+# version the file is updated in place when the generating Rust types change,
+# so it must NOT be cached long or immutably — clients would strand on a stale
+# schema. Short TTL plus revalidation lets a regenerated v1 propagate while
+# still allowing CDN/edge caching.
+/schemas/*
+  Cache-Control: public, max-age=300, must-revalidate
