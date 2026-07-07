@@ -5,268 +5,1009 @@ const docsUrl = 'https://docs.getordo.dev';
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Ordo</title>
+		<title>Ordo — order for the machines you run</title>
 		<meta
 			name="description"
-			content="Self-hosted, declarative infrastructure management for stateful machines."
+			content="Ordo is a self-hosted, declarative infrastructure management tool for teams running real workloads on their own bare metal and VMs. Define state, detect drift, apply on your terms."
 		/>
-	</head>
-	<body>
-		<header>
-			<a href="/" class="brand">Ordo</a>
-			<nav>
-				<a href="#install">Install</a>
-				<a href="#schemas">Schemas</a>
-				<a href={docsUrl}>Docs</a>
-			</nav>
-		</header>
-
-		<main>
-			<section class="hero">
-				<h1>Ordo</h1>
-				<p class="tagline">
-					Intentional infrastructure — define state, detect drift, act
-					deliberately.
-				</p>
-				<p>
-					<a class="cta" href={docsUrl}>Read the docs</a>
-				</p>
-			</section>
-
-			<section>
-				<h2>The problem</h2>
-				<p>
-					Existing tools for managing stateful machines are either too
-					big to operate or too small to trust.
-				</p>
-			</section>
-
-			<section>
-				<h2>What Ordo does</h2>
-				<p>
-					Declarative state management, drift detection, progressive
-					deployment, and an audit trail — all self-hosted by default.
-				</p>
-			</section>
-
-			<section>
-				<h2>Who it is for</h2>
-				<p>
-					Teams running real workloads on machines they own.
-				</p>
-			</section>
-
-			<section>
-				<h2>Architecture at a glance</h2>
-				<p>
-					An orchestrator on one machine; agents on the rest.
-				</p>
-			</section>
-
-			<section id="install">
-				<h2>Install</h2>
-				<p>
-					Each component installs on the machine that runs it. On Linux
-					and macOS:
-				</p>
-
-				<p>
-					<strong>Operator / client tools</strong> — your workstation
-					(installs <code>ordo</code> and <code>ordo-state</code>):
-				</p>
-				<pre
-					class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh</code></pre>
-
-				<p><strong>Orchestrator</strong> — the control host:</p>
-				<pre
-					class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-orchestrator</code></pre>
-
-				<p><strong>Agent</strong> — each managed machine:</p>
-				<pre
-					class="install"><code>curl -fsSL https://getordo.dev/install.sh | sh -s -- ordo-agent</code></pre>
-
-				<p class="muted">
-					On Windows, <code>irm https://getordo.dev/install.ps1 | iex</code
-					> installs the client tools. The installer downloads a prebuilt
-					binary from <code>dl.getordo.dev</code>, verifies its SHA-256
-					checksum, and checks the <a href="/minisign.pub"
-						>minisign signature</a
-					> when minisign is installed. Debian and RPM packages are
-					published alongside the archives in the same release.
-				</p>
-			</section>
-
-			<section id="schemas">
-				<h2>Editor schemas</h2>
-				<p>
-					Machine-readable JSON Schemas for Ordo's module and
-					configuration files. Associate each with the matching file
-					pattern in your editor for autocompletion and validation:
-				</p>
-				<ul class="schemas">
-					<li>
-						<strong>Module files</strong> (<code>*.ordo.yaml</code>) —
-						<a href="https://getordo.dev/schemas/module/v1.json"
-							><code>https://getordo.dev/schemas/module/v1.json</code></a
-						>
-					</li>
-					<li>
-						<strong>Orchestrator config</strong> (<code
-							>orchestrator.yaml</code
-						>) —
-						<a
-							href="https://getordo.dev/schemas/orchestrator-config/v1.json"
-							><code
-								>https://getordo.dev/schemas/orchestrator-config/v1.json</code
-							></a
-						>
-					</li>
-					<li>
-						<strong>Agent config</strong> (<code>agent.yaml</code>) —
-						<a href="https://getordo.dev/schemas/agent-config/v1.json"
-							><code
-								>https://getordo.dev/schemas/agent-config/v1.json</code
-							></a
-						>
-					</li>
-				</ul>
-				<p>In a module file, add a modeline:</p>
-				<pre
-					class="install"><code># yaml-language-server: $schema=https://getordo.dev/schemas/module/v1.json</code></pre>
-				<p class="muted">
-					See the <a href={`${docsUrl}/reference/`}>reference docs</a> for
-					VS Code and JetBrains setup.
-				</p>
-			</section>
-		</main>
-
-		<footer>
-			<p>Ephyra Software</p>
-		</footer>
-
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Spectral:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230e2a35'/><path d='M11 30 A27 27 0 0 1 53 30' fill='none' stroke='%2357d6e3' stroke-width='5' stroke-linecap='round'/><circle cx='32' cy='19' r='5' fill='%238cf0fb'/><rect x='14' y='36' width='9.5' height='16' rx='3' fill='%2335c2d1'/><rect x='27.25' y='36' width='9.5' height='16' rx='3' fill='%238cf0fb'/><rect x='40.5' y='36' width='9.5' height='16' rx='3' fill='%2335c2d1'/></svg>"
+		/>
 		<style is:global>
-			:root {
-				color-scheme: light;
-				--text: #1a1a1a;
-				--muted: #5a5a5a;
-				--accent: #1a1a1a;
-				--rule: #e5e5e5;
-			}
-			html {
-				font-family:
-					ui-serif, Georgia, 'Times New Roman', serif;
-				color: var(--text);
-				background: #fafaf7;
-			}
+			html,
 			body {
 				margin: 0;
-				line-height: 1.6;
+				padding: 0;
+				background: #0a1219;
 			}
-			header,
-			main,
-			footer {
-				max-width: 42rem;
-				margin: 0 auto;
-				padding: 0 1.5rem;
+			* {
+				box-sizing: border-box;
 			}
-			header {
-				display: flex;
-				justify-content: space-between;
-				align-items: baseline;
-				padding-top: 1.5rem;
-				padding-bottom: 1.5rem;
-				border-bottom: 1px solid var(--rule);
+			::selection {
+				background: rgba(87, 214, 227, 0.28);
+				color: #eef4f6;
 			}
-			.brand {
-				font-size: 1.25rem;
-				font-weight: 600;
-				color: var(--text);
-				text-decoration: none;
-				letter-spacing: 0.02em;
-			}
-			nav a {
-				color: var(--muted);
+			a {
+				color: #57d6e3;
 				text-decoration: none;
 			}
-			nav a:hover {
-				color: var(--text);
+			a:hover {
+				color: #8ce7f1;
 			}
-			nav a + a {
-				margin-left: 1rem;
+			#ordo-root ::-webkit-scrollbar {
+				width: 10px;
+				height: 10px;
 			}
-			main {
-				padding-top: 3rem;
-				padding-bottom: 3rem;
+			#ordo-root ::-webkit-scrollbar-thumb {
+				background: #1c3140;
+				border-radius: 6px;
 			}
-			section {
-				margin-bottom: 3rem;
+			@keyframes ordoDash {
+				to {
+					stroke-dashoffset: -40;
+				}
 			}
-			.hero {
-				margin-bottom: 4rem;
+			@keyframes ordoSweep {
+				0% {
+					stroke-dashoffset: 760;
+				}
+				55%,
+				100% {
+					stroke-dashoffset: 0;
+				}
 			}
-			.hero h1 {
-				font-size: 2.5rem;
-				margin: 0 0 0.5rem;
+			@keyframes ordoFloat {
+				0%,
+				100% {
+					transform: translateY(0);
+				}
+				50% {
+					transform: translateY(-10px);
+				}
 			}
-			.tagline {
-				color: var(--muted);
-				font-size: 1.15rem;
-				margin: 0 0 1.5rem;
+			@keyframes ordoPulse {
+				0%,
+				100% {
+					opacity: 0.35;
+				}
+				50% {
+					opacity: 1;
+				}
 			}
-			h2 {
-				font-size: 1.15rem;
-				margin: 0 0 0.5rem;
+			@keyframes ordoSpin {
+				to {
+					transform: rotate(360deg);
+				}
 			}
-			p {
-				margin: 0 0 1rem;
+			@keyframes ordoRipple {
+				0% {
+					transform: scale(0.6);
+					opacity: 0.6;
+				}
+				100% {
+					transform: scale(1.8);
+					opacity: 0;
+				}
 			}
-			.cta {
-				display: inline-block;
-				color: #fafaf7;
-				background: var(--accent);
-				padding: 0.5rem 1rem;
-				text-decoration: none;
-				border-radius: 2px;
-			}
-			.cta:hover {
-				background: #333;
-			}
-			.install {
-				font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas,
-					monospace;
-				font-size: 0.9rem;
-				background: #f0efe9;
-				border: 1px solid var(--rule);
-				border-radius: 2px;
-				padding: 0.75rem 1rem;
-				margin: 0 0 1rem;
-				overflow-x: auto;
-			}
-			.muted {
-				color: var(--muted);
-				font-size: 0.95rem;
-			}
-			.schemas {
-				margin: 0 0 1rem;
-				padding-left: 1.25rem;
-			}
-			.schemas li {
-				margin-bottom: 0.35rem;
-			}
-			.schemas code,
-			.install code {
-				word-break: break-all;
-			}
-			footer {
-				border-top: 1px solid var(--rule);
-				padding-top: 1.5rem;
-				padding-bottom: 1.5rem;
-				color: var(--muted);
-				font-size: 0.9rem;
+			@media (prefers-reduced-motion: reduce) {
+				* {
+					animation: none !important;
+				}
 			}
 		</style>
+	</head>
+	<body>
+		<div
+			id="ordo-root"
+			style="background:#0a1219;color:#eef4f6;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;"
+		>
+			<!-- ============ TOP STRIP ============ -->
+			<div
+				style="position:absolute;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:26px clamp(20px,5vw,64px);"
+			>
+				<div style="display:flex;align-items:center;gap:15px;">
+					<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="display:block;">
+						<path
+							d="M12 29 A26 26 0 0 1 52 29"
+							fill="none"
+							stroke="#35c2d1"
+							stroke-width="4.2"
+							stroke-linecap="round"></path>
+						<path
+							d="M32 23 L20 35 M32 23 L32 35 M32 23 L44 35"
+							stroke="#2a7f8c"
+							stroke-width="2"
+							stroke-linecap="round"></path>
+						<circle cx="32" cy="19.5" r="4.4" fill="#57d6e3"></circle>
+						<rect x="16" y="35" width="8" height="15" rx="2.5" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect>
+						<rect x="28" y="35" width="8" height="15" rx="2.5" fill="#1c3a44" stroke="#57d6e3" stroke-width="1.7"></rect>
+						<rect x="40" y="35" width="8" height="15" rx="2.5" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect>
+					</svg>
+					<span style="font-weight:700;font-size:25px;letter-spacing:.16em;">ORDO</span>
+				</div>
+			</div>
+
+			<!-- ============ HERO ============ -->
+			<section
+				style="position:relative;min-height:100vh;display:flex;align-items:center;padding:150px clamp(20px,5vw,64px) 110px;overflow:hidden;background:radial-gradient(120% 90% at 78% 8%,#0f2632 0%,#0a1219 58%);"
+			>
+				<canvas
+					id="ordo-particles"
+					style="position:absolute;inset:0;width:100%;height:100%;opacity:.9;pointer-events:none;"></canvas>
+				<div
+					data-parallax="0.14"
+					style="position:absolute;right:clamp(8px,2vw,40px);top:9%;width:min(46vw,620px);opacity:.5;pointer-events:none;"
+				>
+					<svg viewBox="0 0 600 540" fill="none" style="width:100%;height:auto;overflow:visible;">
+						<g stroke="#20313d" stroke-width="1"><path d="M70 300h460"></path></g>
+						<path d="M150 300 A150 150 0 0 1 450 300" fill="none" stroke="#173f49" stroke-width="2"></path>
+						<path
+							d="M74 300 A226 226 0 0 1 526 300"
+							fill="none"
+							stroke="#1f8593"
+							stroke-width="3"
+							stroke-linecap="round"
+							stroke-dasharray="760"
+							style="animation:ordoSweep 7s ease-out infinite;"></path>
+						<g
+							stroke="#2a7f8c"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-dasharray="4 6"
+							style="animation:ordoDash 1.6s linear infinite;"
+						>
+							<path d="M300 96 L117 300"></path>
+							<path d="M300 96 L187 300"></path>
+							<path d="M300 96 L257 300"></path>
+							<path d="M300 96 L327 300"></path>
+							<path d="M300 96 L397 300"></path>
+							<path d="M300 96 L467 300"></path>
+						</g>
+						<circle cx="300" cy="74" r="16" fill="none" stroke="#35c2d1" stroke-width="3"></circle>
+						<circle cx="300" cy="74" r="6" fill="#57d6e3"></circle>
+						<rect x="96" y="300" width="42" height="150" rx="6" fill="#122531" stroke="#25404f" stroke-width="1.5"></rect>
+						<rect x="166" y="300" width="42" height="150" rx="6" fill="#122531" stroke="#25404f" stroke-width="1.5"></rect>
+						<rect x="236" y="300" width="42" height="150" rx="6" fill="#122531" stroke="#25404f" stroke-width="1.5"></rect>
+						<rect x="306" y="300" width="42" height="150" rx="6" fill="#14313c" stroke="#35c2d1" stroke-width="2"></rect>
+						<rect x="376" y="300" width="42" height="150" rx="6" fill="#122531" stroke="#25404f" stroke-width="1.5"></rect>
+						<rect x="446" y="300" width="42" height="150" rx="6" fill="#122531" stroke="#25404f" stroke-width="1.5"></rect>
+					</svg>
+				</div>
+				<div
+					data-parallax="-0.05"
+					style="position:absolute;left:-140px;bottom:-120px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(53,194,209,.10),transparent 66%);pointer-events:none;"></div>
+
+				<div style="position:relative;z-index:5;max-width:1180px;margin:0 auto;width:100%;">
+					<div data-reveal style="max-width:820px;">
+						<div
+							style="display:inline-flex;align-items:center;gap:12px;margin-bottom:26px;padding:7px 15px 7px 13px;border:1px solid rgba(53,194,209,.24);border-radius:100px;background:rgba(53,194,209,.06);"
+						>
+							<span style="width:7px;height:7px;border-radius:50%;background:#3fca97;box-shadow:0 0 10px #3fca97;"></span>
+							<span
+								style="font-family:'Spectral',serif;font-style:italic;font-size:15px;color:#a9c5cf;letter-spacing:.01em;"
+								>ordo · order · rank · arrangement</span
+							>
+						</div>
+						<h1
+							style="margin:0;font-weight:800;font-size:clamp(46px,7.4vw,94px);line-height:.98;letter-spacing:-.03em;color:#f3f8fa;"
+						>
+							Order for the<br />machines you run.
+						</h1>
+						<p
+							style="margin:30px 0 0;max-width:620px;font-size:clamp(17px,2vw,20.5px);line-height:1.6;color:#a4b7c3;font-weight:400;"
+						>
+							Ordo is a self-hosted system for teams running real workloads on their own bare metal and
+							VMs. It brings <span style="color:#dbe7ec;">deliberate, auditable state management</span> without
+							standing up enterprise tooling to get it.
+						</p>
+						<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:40px;">
+							<a
+								href={docsUrl}
+								style="display:inline-flex;align-items:center;gap:10px;font-size:16px;font-weight:600;color:#06222a;background:#35c2d1;padding:15px 26px;border-radius:11px;box-shadow:0 12px 40px -12px rgba(53,194,209,.55);"
+							>
+								Read the docs
+								<svg
+									width="17"
+									height="17"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="#06222a"
+									stroke-width="2.4"
+									stroke-linecap="round"
+									stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+							</a>
+							<a
+								href="#gap"
+								style="display:inline-flex;align-items:center;gap:10px;font-size:16px;font-weight:600;color:#dbe7ec;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);padding:15px 24px;border-radius:11px;"
+							>
+								See where Ordo fits
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="#dbe7ec"
+									stroke-width="2.2"
+									stroke-linecap="round"
+									stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>
+							</a>
+						</div>
+						<div
+							style="display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:40px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#647684;"
+						>
+							<span style="display:flex;align-items:center;gap:8px;"
+								><span style="width:5px;height:5px;border-radius:50%;background:#35c2d1;"></span>Self-hosted by default</span
+							>
+							<span style="display:flex;align-items:center;gap:8px;"
+								><span style="width:5px;height:5px;border-radius:50%;background:#35c2d1;"></span>Always encrypted</span
+							>
+							<span style="display:flex;align-items:center;gap:8px;"
+								><span style="width:5px;height:5px;border-radius:50%;background:#35c2d1;"></span>Get started in minutes</span
+							>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ THE GAP ============ -->
+			<section
+				id="gap"
+				style="position:relative;padding:clamp(90px,12vh,150px) clamp(20px,5vw,64px);background:#0a1219;border-top:1px solid rgba(255,255,255,.05);"
+			>
+				<div style="max-width:1180px;margin:0 auto;">
+					<div data-reveal style="max-width:760px;margin-bottom:60px;">
+						<div
+							style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.22em;color:#35c2d1;margin-bottom:20px;"
+						>
+							THE GAP
+						</div>
+						<h2
+							style="margin:0;font-weight:700;font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.02em;color:#f0f6f8;"
+						>
+							Too big to operate,<br />or too small to trust.
+						</h2>
+						<p style="margin:24px 0 0;font-size:18px;line-height:1.6;color:#a4b7c3;max-width:640px;">
+							Most infrastructure tooling makes you choose one or the other. Ordo is built for the space
+							between them.
+						</p>
+					</div>
+					<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(18px,3vw,42px);align-items:stretch;">
+						<div
+							data-reveal
+							style="padding:34px;border:1px solid rgba(224,162,78,.16);border-radius:18px;background:linear-gradient(180deg,rgba(224,162,78,.05),transparent);"
+						>
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;color:#e0a24e;margin-bottom:16px;"
+							>
+								TOO BIG
+							</div>
+							<h3 style="margin:0 0 12px;font-size:22px;font-weight:600;color:#eef4f6;">Enterprise orchestration</h3>
+							<p style="margin:0;font-size:15.5px;line-height:1.62;color:#93a8b5;">
+								Solves hard problems, but assumes cloud-native workloads and a centralised control plane
+								hosted somewhere else. That's significant investment just to run the tooling itself.
+							</p>
+						</div>
+						<div
+							data-reveal
+							style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 clamp(4px,2vw,18px);"
+						>
+							<svg width="96" height="96" viewBox="0 0 64 64" fill="none">
+								<path d="M12 29 A26 26 0 0 1 52 29" fill="none" stroke="#35c2d1" stroke-width="4.2" stroke-linecap="round"></path>
+								<path d="M32 23 L20 35 M32 23 L32 35 M32 23 L44 35" stroke="#2a7f8c" stroke-width="2" stroke-linecap="round"></path>
+								<circle cx="32" cy="19.5" r="4.4" fill="#57d6e3"></circle>
+								<rect x="16" y="35" width="8" height="15" rx="2.4" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect>
+								<rect x="28" y="35" width="8" height="15" rx="2.4" fill="#1c3a44" stroke="#57d6e3" stroke-width="1.7"></rect>
+								<rect x="40" y="35" width="8" height="15" rx="2.4" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect>
+							</svg>
+							<div style="font-family:'Spectral',serif;font-style:italic;font-size:16px;color:#a9c5cf;margin-top:16px;text-align:center;">
+								Ordo sits<br />in the gap
+							</div>
+						</div>
+						<div
+							data-reveal
+							style="padding:34px;border:1px solid rgba(224,162,78,.16);border-radius:18px;background:linear-gradient(180deg,rgba(224,162,78,.05),transparent);"
+						>
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;color:#e0a24e;margin-bottom:16px;"
+							>
+								TOO SMALL
+							</div>
+							<h3 style="margin:0 0 12px;font-size:22px;font-weight:600;color:#eef4f6;">Scripts &amp; ad-hoc SSH</h3>
+							<p style="margin:0;font-size:15.5px;line-height:1.62;color:#93a8b5;">
+								Gets things done, but offers no guardrails, no audit trail, and no reliable way to know
+								whether the fleet is actually in the state you think it is.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ HOW IT WORKS ============ -->
+			<section
+				id="architecture"
+				style="position:relative;padding:clamp(90px,12vh,150px) clamp(20px,5vw,64px);background:linear-gradient(180deg,#0d1a24,#0a1219);border-top:1px solid rgba(255,255,255,.05);overflow:hidden;"
+			>
+				<div style="max-width:1180px;margin:0 auto;">
+					<div data-reveal style="max-width:760px;margin-bottom:56px;">
+						<div
+							style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.22em;color:#35c2d1;margin-bottom:20px;"
+						>
+							ARCHITECTURE
+						</div>
+						<h2
+							style="margin:0;font-weight:700;font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.02em;color:#f0f6f8;"
+						>
+							One orchestrator, agents on every machine.
+						</h2>
+					</div>
+					<div style="display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,70px);align-items:center;">
+						<div
+							data-reveal
+							style="position:relative;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:#0b1a24;padding:30px;min-height:340px;"
+						>
+							<svg viewBox="0 0 460 340" style="width:100%;height:auto;overflow:visible;font-family:'IBM Plex Mono',monospace;">
+								<defs>
+									<marker id="ah" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto"
+										><path d="M0 0l6 3.5L0 7z" fill="#2b4c5e"></path></marker
+									>
+								</defs>
+								<g
+									stroke="#35c2d1"
+									stroke-width="1.6"
+									fill="none"
+									stroke-dasharray="5 6"
+									style="animation:ordoDash 1.4s linear infinite;"
+								>
+									<path d="M230 120 L110 250"></path>
+									<path d="M230 120 L230 250"></path>
+									<path d="M230 120 L350 250"></path>
+								</g>
+								<g>
+									<circle cx="230" cy="90" r="62" fill="rgba(53,194,209,.06)"></circle>
+									<rect x="164" y="60" width="132" height="60" rx="12" fill="#12303c" stroke="#35c2d1" stroke-width="1.6"></rect>
+									<text x="230" y="85" text-anchor="middle" fill="#8ce7f1" font-size="13" font-weight="600">orchestrator</text>
+									<text x="230" y="103" text-anchor="middle" fill="#7c98a8" font-size="10.5">state · audit log</text>
+								</g>
+								<g>
+									<rect x="66" y="252" width="88" height="52" rx="10" fill="#12222f" stroke="#2b4c5e" stroke-width="1.4"></rect>
+									<text x="110" y="274" text-anchor="middle" fill="#c7d6de" font-size="11" font-weight="600">agent</text>
+									<text x="110" y="290" text-anchor="middle" fill="#3fca97" font-size="8.5">● in sync</text>
+									<rect x="186" y="252" width="88" height="52" rx="10" fill="#12222f" stroke="#2b4c5e" stroke-width="1.4"></rect>
+									<text x="230" y="274" text-anchor="middle" fill="#c7d6de" font-size="11" font-weight="600">agent</text>
+									<text x="230" y="290" text-anchor="middle" fill="#e0a24e" font-size="8.5">● drift</text>
+									<rect x="306" y="252" width="88" height="52" rx="10" fill="#12222f" stroke="#2b4c5e" stroke-width="1.4"></rect>
+									<text x="350" y="274" text-anchor="middle" fill="#c7d6de" font-size="11" font-weight="600">agent</text>
+									<text x="350" y="290" text-anchor="middle" fill="#3fca97" font-size="8.5">● in sync</text>
+								</g>
+								<rect x="116" y="175" width="228" height="19" rx="4" fill="#0b1a24"></rect>
+								<text x="230" y="188" text-anchor="middle" fill="#7c98a8" font-size="10.5" letter-spacing="1.5">ENCRYPTED · AUTHENTICATED</text>
+							</svg>
+						</div>
+						<div data-reveal style="display:flex;flex-direction:column;gap:26px;">
+							<div style="display:flex;gap:16px;">
+								<div
+									style="flex:none;width:34px;height:34px;border-radius:9px;background:rgba(53,194,209,.1);border:1px solid rgba(53,194,209,.25);display:flex;align-items:center;justify-content:center;color:#57d6e3;font-family:'IBM Plex Mono',monospace;font-size:13px;"
+								>
+									1
+								</div>
+								<div>
+									<h4 style="margin:0 0 6px;font-size:17px;font-weight:600;color:#eef4f6;">The orchestrator holds the intent</h4>
+									<p style="margin:0;font-size:15px;line-height:1.6;color:#93a8b5;">
+										Desired state and the full audit record live on one machine that never needs to be
+										internet-accessible.
+									</p>
+								</div>
+							</div>
+							<div style="display:flex;gap:16px;">
+								<div
+									style="flex:none;width:34px;height:34px;border-radius:9px;background:rgba(53,194,209,.1);border:1px solid rgba(53,194,209,.25);display:flex;align-items:center;justify-content:center;color:#57d6e3;font-family:'IBM Plex Mono',monospace;font-size:13px;"
+								>
+									2
+								</div>
+								<div>
+									<h4 style="margin:0 0 6px;font-size:17px;font-weight:600;color:#eef4f6;">Agents own their identity</h4>
+									<p style="margin:0;font-size:15px;line-height:1.6;color:#93a8b5;">
+										Each agent holds its own cryptographic key and must be explicitly approved before any work
+										flows in either direction.
+									</p>
+								</div>
+							</div>
+							<div style="display:flex;gap:16px;">
+								<div
+									style="flex:none;width:34px;height:34px;border-radius:9px;background:rgba(53,194,209,.1);border:1px solid rgba(53,194,209,.25);display:flex;align-items:center;justify-content:center;color:#57d6e3;font-family:'IBM Plex Mono',monospace;font-size:13px;"
+								>
+									3
+								</div>
+								<div>
+									<h4 style="margin:0 0 6px;font-size:17px;font-weight:600;color:#eef4f6;">Trust is pinned, not issued</h4>
+									<p style="margin:0;font-size:15px;line-height:1.6;color:#93a8b5;">
+										No certificates, no CAs, no expiry. Identities are pinned on first connection. If an
+										agent's key changes it re-enters approval, and a changed orchestrator key is refused
+										outright.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ PRINCIPLES ============ -->
+			<section
+				style="position:relative;padding:clamp(90px,12vh,150px) clamp(20px,5vw,64px);background:#0a1219;border-top:1px solid rgba(255,255,255,.05);"
+			>
+				<div style="max-width:1180px;margin:0 auto;">
+					<div data-reveal style="max-width:760px;margin-bottom:56px;">
+						<div
+							style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.22em;color:#35c2d1;margin-bottom:20px;"
+						>
+							PRINCIPLES
+						</div>
+						<h2
+							style="margin:0;font-weight:700;font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.02em;color:#f0f6f8;"
+						>
+							Opinions, held on purpose.
+						</h2>
+					</div>
+					<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;">
+						<div data-reveal style="padding:30px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0d1a24;">
+							<div
+								style="width:40px;height:40px;border-radius:11px;background:rgba(53,194,209,.1);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"
+							>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#57d6e3" stroke-width="1.9"
+									><path d="M3 9l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M9 21V12h6v9"></path></svg
+								>
+							</div>
+							<h3 style="margin:0 0 9px;font-size:18px;font-weight:600;color:#eef4f6;">Self-hosted by default</h3>
+							<p style="margin:0;font-size:14.5px;line-height:1.6;color:#8ea3b0;">
+								State, auth, audit, and metrics all run locally. The default path works on a single machine
+								with no internet access.
+							</p>
+						</div>
+						<div data-reveal style="padding:30px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0d1a24;">
+							<div
+								style="width:40px;height:40px;border-radius:11px;background:rgba(53,194,209,.1);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"
+							>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#57d6e3" stroke-width="1.9"
+									><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg
+								>
+							</div>
+							<h3 style="margin:0 0 9px;font-size:18px;font-weight:600;color:#eef4f6;">Safe by design</h3>
+							<p style="margin:0;font-size:14.5px;line-height:1.6;color:#8ea3b0;">
+								Preview any change with a plan before it touches a machine. Nothing is applied until you say
+								so.
+							</p>
+						</div>
+						<div data-reveal style="padding:30px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0d1a24;">
+							<div
+								style="width:40px;height:40px;border-radius:11px;background:rgba(53,194,209,.1);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"
+							>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#57d6e3" stroke-width="1.9"
+									><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M8 13h8M8 17h5"></path></svg
+								>
+							</div>
+							<h3 style="margin:0 0 9px;font-size:18px;font-weight:600;color:#eef4f6;">Auditable by default</h3>
+							<p style="margin:0;font-size:14.5px;line-height:1.6;color:#8ea3b0;">
+								Who requested it, what was applied, what happened. Recorded for every action, with no extra
+								configuration.
+							</p>
+						</div>
+						<div data-reveal style="padding:30px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0d1a24;">
+							<div
+								style="width:40px;height:40px;border-radius:11px;background:rgba(53,194,209,.1);display:flex;align-items:center;justify-content:center;margin-bottom:20px;"
+							>
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#57d6e3" stroke-width="1.9"
+									><path
+										d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"
+									></path><circle cx="12" cy="12" r="3.2"></circle></svg
+								>
+							</div>
+							<h3 style="margin:0 0 9px;font-size:18px;font-weight:600;color:#eef4f6;">Opinionated where it matters</h3>
+							<p style="margin:0;font-size:14.5px;line-height:1.6;color:#8ea3b0;">
+								Sensible, secure defaults out of the box, with a documented path for the common cases, so the
+								safe way is also the easy way.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ CAPABILITIES ============ -->
+			<section
+				style="position:relative;padding:clamp(90px,12vh,150px) clamp(20px,5vw,64px);background:linear-gradient(180deg,#0d1a24,#0a1219);border-top:1px solid rgba(255,255,255,.05);"
+			>
+				<div style="max-width:1180px;margin:0 auto;">
+					<div data-reveal style="max-width:760px;margin-bottom:56px;">
+						<div
+							style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.22em;color:#35c2d1;margin-bottom:20px;"
+						>
+							CAPABILITIES
+						</div>
+						<h2
+							style="margin:0;font-weight:700;font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.02em;color:#f0f6f8;"
+						>
+							Declare it. Watch for drift.<br />Apply on your terms.
+						</h2>
+					</div>
+					<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+						<div data-reveal style="padding:28px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0b1a24;">
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#35c2d1;margin-bottom:14px;"
+							>
+								DECLARATIVE STATE
+							</div>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#9fb2be;">
+								Describe <span style="color:#dbe7ec;">what</span> you want: files, services, config, packages. Ordo
+								plans how to reach and maintain that state.
+							</p>
+						</div>
+						<div
+							data-reveal
+							style="padding:28px;border:1px solid rgba(224,162,78,.2);border-radius:16px;background:linear-gradient(180deg,rgba(224,162,78,.05),#0b1a24);"
+						>
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#e0a24e;margin-bottom:14px;"
+							>
+								DRIFT DETECTION
+							</div>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#9fb2be;">
+								Agents continuously check actual against declared. Drift is surfaced and alerted, never
+								silently &ldquo;fixed&rdquo; behind your back.
+							</p>
+						</div>
+						<div data-reveal style="padding:28px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0b1a24;">
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#57d6e3;margin-bottom:14px;"
+							>
+								PLAN MODE
+							</div>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#9fb2be;">
+								An accurate diff of what would change, before you touch a machine. Nothing is applied during a
+								plan.
+							</p>
+						</div>
+						<div data-reveal style="padding:28px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0b1a24;">
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#57d6e3;margin-bottom:14px;"
+							>
+								CHANGE TRIGGERS
+							</div>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#9fb2be;">
+								Reload or restart a service, or re-run a script, automatically when a resource it depends on
+								changes — and see it predicted in the plan first.
+							</p>
+						</div>
+						<div
+							data-reveal
+							style="padding:28px;border:1px solid rgba(157,140,240,.22);border-radius:16px;background:linear-gradient(180deg,rgba(157,140,240,.05),#0b1a24);"
+						>
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#b0a2f4;margin-bottom:14px;"
+							>
+								SECRET DISTRIBUTION
+							</div>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#9fb2be;">
+								Encrypted at rest, resolved server-side, redacted in every log and plan. Restrict by tag or
+								node ID.
+							</p>
+						</div>
+						<div data-reveal style="padding:28px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:#0b1a24;">
+							<div
+								style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#3fca97;margin-bottom:14px;"
+							>
+								AUDIT LOG &amp; HISTORY
+							</div>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#9fb2be;">
+								Every applied state and state change, per agent, retained on a schedule you control and
+								queryable via the API, the CLI, and the web UI.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ WORKED EXAMPLE ============ -->
+			<section
+				style="position:relative;padding:clamp(90px,12vh,150px) clamp(20px,5vw,64px);background:#0a1219;border-top:1px solid rgba(255,255,255,.05);"
+			>
+				<div style="max-width:1180px;margin:0 auto;">
+					<div data-reveal style="max-width:760px;margin-bottom:56px;">
+						<div
+							style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.22em;color:#35c2d1;margin-bottom:20px;"
+						>
+							IN PRACTICE
+						</div>
+						<h2
+							style="margin:0;font-weight:700;font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.02em;color:#f0f6f8;"
+						>
+							Real modules. Readable YAML.
+						</h2>
+						<p style="margin:24px 0 0;font-size:18px;line-height:1.6;color:#a4b7c3;max-width:640px;">
+							A package, its config, and a systemd service, each a first-class resource with its own drift
+							detection and a predicted plan.
+						</p>
+					</div>
+					<div style="display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:stretch;">
+						<div
+							data-reveal
+							style="border:1px solid rgba(255,255,255,.09);border-radius:16px;background:#0b141c;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);"
+						>
+							<div
+								style="display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:#0d1822;"
+							>
+								<span style="width:11px;height:11px;border-radius:50%;background:#33414d;"></span>
+								<span style="width:11px;height:11px;border-radius:50%;background:#33414d;"></span>
+								<span style="width:11px;height:11px;border-radius:50%;background:#33414d;"></span>
+								<span style="margin-left:10px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#647684;"
+									>caddy-site.ordo.yaml</span
+								>
+							</div>
+							<pre
+								style="margin:0;padding:22px;font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.75;color:#a9bcc7;overflow-x:auto;"><span
+									style="color:#5b6f7c;"># Serve a static site: package, config, service
+</span><span style="color:#57d6e3;">name</span>: caddy-site
+<span style="color:#57d6e3;">supports</span>:
+  - {'{'}<span style="color:#57d6e3;">platform</span>: <span style="color:#b0a2f4;">linux</span>, <span style="color:#57d6e3;">init_system</span>: <span style="color:#b0a2f4;">systemd</span>{'}'}
+<span style="color:#57d6e3;">resources</span>:
+  - <span style="color:#57d6e3;">id</span>: caddy-pkg
+    <span style="color:#57d6e3;">resource</span>:
+      <span style="color:#7fd7e0;">package-apt</span>: {'{'} <span style="color:#57d6e3;">name</span>: caddy {'}'}
+  - <span style="color:#57d6e3;">id</span>: caddyfile
+    <span style="color:#57d6e3;">depends_on</span>: [caddy-pkg]
+    <span style="color:#57d6e3;">resource</span>:
+      <span style="color:#7fd7e0;">file-unix</span>:
+        <span style="color:#57d6e3;">path</span>: <span style="color:#8fd9a8;">/etc/caddy/Caddyfile</span>
+        <span style="color:#57d6e3;">template</span>: caddyfile
+  - <span style="color:#57d6e3;">id</span>: caddy-service
+    <span style="color:#57d6e3;">depends_on</span>: [caddyfile]
+    <span style="color:#57d6e3;">resource</span>:
+      <span style="color:#7fd7e0;">service-systemd</span>:
+        <span style="color:#57d6e3;">name</span>: caddy
+        <span style="color:#57d6e3;">enabled</span>: <span style="color:#e0a24e;">true</span>
+        <span style="color:#57d6e3;">running</span>: <span style="color:#e0a24e;">true</span>
+        <span style="color:#57d6e3;">reload_on</span>: [caddyfile]</pre>
+						</div>
+						<div
+							data-reveal
+							style="display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:#0b141c;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.6);"
+						>
+							<div
+								style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.07);background:#0d1822;"
+							>
+								<span style="font-size:14px;font-weight:600;color:#dbe7ec;">Agents · Reconcile</span>
+								<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5f7482;">orchestrator web UI</span>
+							</div>
+							<div style="padding:10px 12px;display:flex;flex-direction:column;gap:2px;flex:1;">
+								<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 12px;border-radius:9px;">
+									<div style="display:flex;flex-direction:column;gap:3px;">
+										<span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#cddbe3;">web-01</span><span
+											style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#5f7482;">env=prod role=web</span
+										>
+									</div>
+									<span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#3fca97;"
+										><span style="width:7px;height:7px;border-radius:50%;background:#3fca97;"></span>in sync</span
+									>
+								</div>
+								<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 12px;border-radius:9px;">
+									<div style="display:flex;flex-direction:column;gap:3px;">
+										<span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#cddbe3;">web-02</span><span
+											style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#5f7482;">env=prod role=web</span
+										>
+									</div>
+									<span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#3fca97;"
+										><span style="width:7px;height:7px;border-radius:50%;background:#3fca97;"></span>in sync</span
+									>
+								</div>
+								<div
+									style="display:flex;align-items:center;justify-content:space-between;padding:13px 12px;border-radius:9px;background:rgba(224,162,78,.08);border:1px solid rgba(224,162,78,.2);"
+								>
+									<div style="display:flex;flex-direction:column;gap:3px;">
+										<span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#f0e0c6;">web-03</span><span
+											style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#b9925a;">Caddyfile modified</span
+										>
+									</div>
+									<span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#e0a24e;"
+										><span style="width:7px;height:7px;border-radius:50%;background:#e0a24e;box-shadow:0 0 8px #e0a24e;"></span>drift</span
+									>
+								</div>
+								<div style="display:flex;align-items:center;justify-content:space-between;padding:13px 12px;border-radius:9px;">
+									<div style="display:flex;flex-direction:column;gap:3px;">
+										<span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#cddbe3;">db-01</span><span
+											style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#5f7482;">env=prod role=db</span
+										>
+									</div>
+									<span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#3fca97;"
+										><span style="width:7px;height:7px;border-radius:50%;background:#3fca97;"></span>in sync</span
+									>
+								</div>
+							</div>
+							<div
+								style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-top:1px solid rgba(255,255,255,.07);background:#0d1822;"
+							>
+								<span style="display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#93a8b5;"
+									><span style="width:8px;height:8px;border-radius:50%;background:#e0a24e;box-shadow:0 0 8px #e0a24e;"></span>3 in sync ·
+									1 drifted</span
+								>
+								<span style="font-size:12.5px;font-weight:600;color:#06222a;background:#35c2d1;padding:7px 15px;border-radius:8px;">Apply</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ WHO IT'S FOR ============ -->
+			<section
+				style="position:relative;padding:clamp(90px,12vh,150px) clamp(20px,5vw,64px);background:linear-gradient(180deg,#0d1a24,#0a1219);border-top:1px solid rgba(255,255,255,.05);"
+			>
+				<div style="max-width:1180px;margin:0 auto;">
+					<div data-reveal style="max-width:760px;margin-bottom:50px;">
+						<div
+							style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.22em;color:#35c2d1;margin-bottom:20px;"
+						>
+							WHO IT'S FOR
+						</div>
+						<h2
+							style="margin:0;font-weight:700;font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.02em;color:#f0f6f8;"
+						>
+							For operators who run<br />their own infrastructure.
+						</h2>
+					</div>
+					<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;">
+						<div data-reveal style="padding:28px;border-left:2px solid #35c2d1;background:rgba(53,194,209,.04);border-radius:0 12px 12px 0;">
+							<h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#eef4f6;">Small platform teams</h3>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#93a8b5;">
+								Small teams who need guardrails and an audit trail, without standing up a cloud control plane
+								to get them.
+							</p>
+						</div>
+						<div data-reveal style="padding:28px;border-left:2px solid #35c2d1;background:rgba(53,194,209,.04);border-radius:0 12px 12px 0;">
+							<h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#eef4f6;">Homelab</h3>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#93a8b5;">
+								Running real workloads on hardware you control, with the rigour to rebuild a failed box from
+								declared state, not memory.
+							</p>
+						</div>
+						<div data-reveal style="padding:28px;border-left:2px solid #35c2d1;background:rgba(53,194,209,.04);border-radius:0 12px 12px 0;">
+							<h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#eef4f6;">Self-hosting by principle</h3>
+							<p style="margin:0;font-size:15px;line-height:1.6;color:#93a8b5;">
+								Teams whose whole reason for self-hosting is avoiding a hosted dependency, the exact
+								assumption Ordo refuses to make.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ============ FINAL CTA ============ -->
+			<section
+				style="position:relative;padding:clamp(110px,15vh,180px) clamp(20px,5vw,64px);background:radial-gradient(110% 130% at 50% 0%,#103240 0%,#0a1219 62%);border-top:1px solid rgba(255,255,255,.05);overflow:hidden;text-align:center;"
+			>
+				<div style="position:absolute;top:6%;left:50%;transform:translateX(-50%);opacity:.5;pointer-events:none;">
+					<svg width="100" height="100" viewBox="0 0 64 64" fill="none">
+						<path d="M12 29 A26 26 0 0 1 52 29" fill="none" stroke="#35c2d1" stroke-width="4.2" stroke-linecap="round"></path>
+						<path d="M32 23 L20 35 M32 23 L32 35 M32 23 L44 35" stroke="#2a7f8c" stroke-width="2" stroke-linecap="round"></path>
+						<circle cx="32" cy="19.5" r="4.4" fill="#57d6e3"></circle>
+						<rect x="16" y="35" width="8" height="15" rx="2.5" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect>
+						<rect x="28" y="35" width="8" height="15" rx="2.5" fill="#1c3a44" stroke="#57d6e3" stroke-width="1.7"></rect>
+						<rect x="40" y="35" width="8" height="15" rx="2.5" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect>
+					</svg>
+				</div>
+				<div data-reveal style="position:relative;max-width:820px;margin:0 auto;">
+					<h2
+						style="margin:0;font-weight:800;font-size:clamp(34px,5.6vw,66px);line-height:1.04;letter-spacing:-.025em;color:#f3f8fa;"
+					>
+						Define state. Detect drift.<br />Then act, deliberately.
+					</h2>
+					<p style="margin:26px auto 0;max-width:560px;font-size:18px;line-height:1.6;color:#a4b7c3;">
+						Install, bootstrap, and connect your first agent in minutes. Everything runs on infrastructure
+						you control.
+					</p>
+					<div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:40px;">
+						<a
+							href={docsUrl}
+							style="display:inline-flex;align-items:center;gap:10px;font-size:16px;font-weight:600;color:#06222a;background:#35c2d1;padding:16px 30px;border-radius:11px;box-shadow:0 12px 40px -12px rgba(53,194,209,.55);"
+							>Read the docs<svg
+								width="17"
+								height="17"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="#06222a"
+								stroke-width="2.4"
+								stroke-linecap="round"
+								stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg
+							></a
+						>
+					</div>
+					<p style="margin:22px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#9db2bf;">
+						The docs walk you through install, bootstrap, and your first apply.
+					</p>
+				</div>
+			</section>
+
+			<!-- ============ FOOTER ============ -->
+			<footer style="padding:44px clamp(20px,5vw,64px);background:#080f16;border-top:1px solid rgba(255,255,255,.06);">
+				<div
+					style="max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;"
+				>
+					<div style="display:flex;align-items:center;gap:12px;">
+						<svg width="30" height="30" viewBox="0 0 64 64" fill="none"
+							><path d="M12 29 A26 26 0 0 1 52 29" fill="none" stroke="#35c2d1" stroke-width="4.2" stroke-linecap="round"></path><path
+								d="M32 23 L20 35 M32 23 L32 35 M32 23 L44 35"
+								stroke="#2a7f8c"
+								stroke-width="2"
+								stroke-linecap="round"></path><circle cx="32" cy="19.5" r="4.4" fill="#57d6e3"></circle><rect
+								x="16"
+								y="35"
+								width="8"
+								height="15"
+								rx="2.5"
+								fill="#385061"
+								stroke="#5f7d93"
+								stroke-width="1.4"></rect><rect x="28" y="35" width="8" height="15" rx="2.5" fill="#1c3a44" stroke="#57d6e3" stroke-width="1.7"
+							></rect><rect x="40" y="35" width="8" height="15" rx="2.5" fill="#385061" stroke="#5f7d93" stroke-width="1.4"></rect></svg
+						>
+						<div style="display:flex;flex-direction:column;">
+							<span style="font-weight:700;letter-spacing:.14em;font-size:15px;">ORDO</span><span
+								style="font-family:'Spectral',serif;font-style:italic;font-size:12.5px;color:#5f7482;">order · rank · arrangement</span
+							>
+						</div>
+					</div>
+					<span style="font-size:13px;color:#4a5c68;">© 2026 Ephyra Software</span>
+				</div>
+			</footer>
+		</div>
+
+		<script is:inline>
+			(function () {
+				var reduce =
+					window.matchMedia &&
+					window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				var root = document.getElementById('ordo-root');
+				if (!root) return;
+
+				function initReveal() {
+					var els = [].slice.call(root.querySelectorAll('[data-reveal]'));
+					els.forEach(function (el) {
+						el.style.opacity = '0';
+						el.style.transform = 'translateY(30px)';
+						el.style.transition =
+							'opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1)';
+						el.__revealed = false;
+					});
+					var onScroll = null;
+					function check() {
+						var vh = window.innerHeight || 800;
+						var pending = 0;
+						for (var i = 0; i < els.length; i++) {
+							var el = els[i];
+							if (el.__revealed) continue;
+							var rect = el.getBoundingClientRect();
+							if (rect.top < vh * 0.92) {
+								el.__revealed = true;
+								el.style.opacity = '1';
+								el.style.transform = 'none';
+							} else {
+								pending++;
+							}
+						}
+						if (!pending && onScroll) {
+							window.removeEventListener('scroll', onScroll);
+							onScroll = null;
+						}
+					}
+					onScroll = check;
+					window.addEventListener('scroll', check, { passive: true });
+					check();
+					setTimeout(check, 250);
+				}
+
+				function initParallax() {
+					if (reduce) return;
+					var layers = [].slice.call(root.querySelectorAll('[data-parallax]'));
+					if (!layers.length) return;
+					for (var i = 0; i < layers.length; i++) {
+						var t = layers[i].style.transform || '';
+						if (t) layers[i].setAttribute('data-base', t);
+					}
+					function onScroll() {
+						var y = window.scrollY || window.pageYOffset || 0;
+						for (var j = 0; j < layers.length; j++) {
+							var l = layers[j];
+							var s = parseFloat(l.getAttribute('data-parallax')) || 0;
+							var base = l.getAttribute('data-base') || '';
+							l.style.transform =
+								base + ' translate3d(0,' + (y * s).toFixed(1) + 'px,0)';
+						}
+					}
+					window.addEventListener('scroll', onScroll, { passive: true });
+					onScroll();
+				}
+
+				function initParticles() {
+					if (reduce) return;
+					var c = root.querySelector('#ordo-particles');
+					if (!c) return;
+					var ctx = c.getContext('2d');
+					var host = c.parentElement;
+					var W = 0,
+						H = 0,
+						dpr = 1;
+					function resize() {
+						dpr = Math.min(2, window.devicePixelRatio || 1);
+						W = host.clientWidth;
+						H = host.clientHeight;
+						c.width = W * dpr;
+						c.height = H * dpr;
+						ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+					}
+					resize();
+					window.addEventListener('resize', resize);
+					var N = Math.min(96, Math.round(W / 20));
+					var LINK = 168;
+					var pts = [];
+					for (var i = 0; i < N; i++) {
+						pts.push({
+							x: Math.random() * W,
+							y: Math.random() * H,
+							vx: (Math.random() - 0.5) * 0.22,
+							vy: (Math.random() - 0.5) * 0.22,
+							r: Math.random() * 1.5 + 0.6,
+						});
+					}
+					function step() {
+						ctx.clearRect(0, 0, W, H);
+						for (var i = 0; i < pts.length; i++) {
+							var p = pts[i];
+							p.x += p.vx;
+							p.y += p.vy;
+							if (p.x < 0 || p.x > W) p.vx *= -1;
+							if (p.y < 0 || p.y > H) p.vy *= -1;
+						}
+						for (var i = 0; i < pts.length; i++) {
+							for (var j = i + 1; j < pts.length; j++) {
+								var a = pts[i],
+									b = pts[j];
+								var dx = a.x - b.x,
+									dy = a.y - b.y;
+								var d = Math.hypot(dx, dy);
+								if (d < LINK) {
+									var al = (1 - d / LINK) * 0.3;
+									ctx.strokeStyle = 'rgba(53,194,209,' + al.toFixed(3) + ')';
+									ctx.lineWidth = 1;
+									ctx.beginPath();
+									ctx.moveTo(a.x, a.y);
+									ctx.lineTo(b.x, b.y);
+									ctx.stroke();
+								}
+							}
+						}
+						for (var i = 0; i < pts.length; i++) {
+							var p = pts[i];
+							ctx.fillStyle = 'rgba(87,214,227,0.6)';
+							ctx.beginPath();
+							ctx.arc(p.x, p.y, p.r, 0, 6.29);
+							ctx.fill();
+						}
+						requestAnimationFrame(step);
+					}
+					step();
+				}
+
+				setTimeout(function () {
+					initReveal();
+					initParallax();
+					initParticles();
+				}, 30);
+			})();
+		</script>
 	</body>
 </html>
