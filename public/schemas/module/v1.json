@@ -469,6 +469,13 @@
           "description": "Interpreter to invoke. Supported values: `sh`, `bash`, `pwsh`, `powershell`, `cmd`.",
           "type": "string"
         },
+        "rerun_on": {
+          "description": "Resource ids whose change during an apply forces this script's `apply` to re-run, even if its own `check` reports no change. Each id implies an ordering edge, like `depends_on`. See `docs/design/0027-change-triggers.md`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "undo": {
           "description": "Optional reversal script. Run when the resource is removed.",
           "default": null,
@@ -541,6 +548,13 @@
             "array",
             "null"
           ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "restart_on": {
+          "description": "Resource ids whose change during an apply causes this service to restart. launchd has no live reload, so there is no `reload_on`. Each id implies an ordering edge, like `depends_on`. See `docs/design/0027-change-triggers.md`.",
+          "type": "array",
           "items": {
             "type": "string"
           }
@@ -661,6 +675,13 @@
           "description": "Service name (without `.service`).",
           "type": "string"
         },
+        "reload_on": {
+          "description": "Resource ids whose change during an apply causes this service to reload (`systemctl reload`, no full stop). Reload is systemd-only. Each id implies an ordering edge, like `depends_on`. See `docs/design/0027-change-triggers.md`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "restart": {
           "description": "Restart policy: `always`, `on_failure`, or `never`.",
           "default": null,
@@ -672,6 +693,13 @@
               "type": "null"
             }
           ]
+        },
+        "restart_on": {
+          "description": "Resource ids whose change during an apply causes this service to restart (stop then start). Each id implies an ordering edge, like `depends_on`. See `docs/design/0027-change-triggers.md`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "running": {
           "description": "Whether the service is currently running.",
@@ -765,6 +793,13 @@
         "name": {
           "description": "Service name.",
           "type": "string"
+        },
+        "restart_on": {
+          "description": "Resource ids whose change during an apply causes this service to restart. Windows SCM has no live reload, so there is no `reload_on`. Each id implies an ordering edge, like `depends_on`. See `docs/design/0027-change-triggers.md`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "running": {
           "description": "Whether the service is currently running.",
