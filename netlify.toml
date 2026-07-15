@@ -4,3 +4,19 @@
 
 [build.environment]
   NODE_VERSION = "24"
+
+# The install scripts are produced and published by the ordo release pipeline to
+# the distribution bucket (dl.getordo.dev). Redirect the branded getordo.dev URLs
+# there rather than committing a second copy that can drift from the pipeline's.
+# `force = true` so the redirect wins even if a stale static file lingers.
+[[redirects]]
+  from = "/install.sh"
+  to = "https://dl.getordo.dev/install.sh"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/install.ps1"
+  to = "https://dl.getordo.dev/install.ps1"
+  status = 302
+  force = true
