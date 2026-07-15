@@ -20,3 +20,11 @@
   to = "https://dl.getordo.dev/install.ps1"
   status = 302
   force = true
+
+# AI tooling context (per-role AGENTS.md/CLAUDE.md), published to the bucket by
+# the ordo release pipeline under a stable, version-agnostic name.
+[[redirects]]
+  from = "/ai-context.tar.gz"
+  to = "https://dl.getordo.dev/ai-context.tar.gz"
+  status = 302
+  force = true
